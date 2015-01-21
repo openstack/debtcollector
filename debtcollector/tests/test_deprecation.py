@@ -35,6 +35,16 @@ class WoofWoof(object):
         return self.bark
 
 
+class KittyKat(object):
+
+    @moves.moved_method('supermeow')
+    def meow(self):
+        return self.supermeow()
+
+    def supermeow(self):
+        return 'supermeow'
+
+
 class NewHotness(object):
     def hot(self):
         return 'cold'
@@ -91,6 +101,29 @@ class MovedPropertyTest(test_base.TestCase):
         with warnings.catch_warnings(record=True) as capture:
             warnings.simplefilter("always")
             self.assertEqual('woof', dog.bark)
+        self.assertEqual(0, len(capture))
+
+
+class MovedMethodTest(test_base.TestCase):
+    def test_basics(self):
+        c = KittyKat()
+        self.assertEqual('supermeow', c.meow())
+        self.assertEqual('supermeow', c.supermeow())
+
+    def test_warnings_emitted(self):
+        c = KittyKat()
+        with warnings.catch_warnings(record=True) as capture:
+            warnings.simplefilter("always")
+            self.assertEqual('supermeow', c.meow())
+        self.assertEqual(1, len(capture))
+        w = capture[0]
+        self.assertEqual(DeprecationWarning, w.category)
+
+    def test_warnings_not_emitted(self):
+        c = KittyKat()
+        with warnings.catch_warnings(record=True) as capture:
+            warnings.simplefilter("always")
+            self.assertEqual('supermeow', c.supermeow())
         self.assertEqual(0, len(capture))
 
 

@@ -23,10 +23,12 @@ from debtcollector import _utils
 
 _KIND_MOVED_PREFIX_TPL = "%s '%s' has moved to '%s'"
 _CLASS_MOVED_PREFIX_TPL = "Class '%s' has moved to '%s'"
+_MOVED_METHOD_POSTFIX = "()"
 
 
 def _moved_decorator(kind, new_attribute_name, message=None,
-                     version=None, removal_version=None, stacklevel=3):
+                     version=None, removal_version=None, stacklevel=3,
+                     attr_postfix=None):
     """Decorates a method/property that was moved to another location."""
 
     def decorator(f):
@@ -37,6 +39,9 @@ def _moved_decorator(kind, new_attribute_name, message=None,
         except AttributeError:
             old_attribute_name = f.__name__
             fully_qualified = False
+
+        if attr_postfix:
+            old_attribute_name += attr_postfix
 
         @six.wraps(f)
         def wrapper(self, *args, **kwargs):
@@ -58,10 +63,20 @@ def _moved_decorator(kind, new_attribute_name, message=None,
     return decorator
 
 
+def moved_method(new_method_name, message=None,
+                 version=None, removal_version=None, stacklevel=3):
+    """Decorates a *instance* method that was moved to another location."""
+    if not new_method_name.endswith(_MOVED_METHOD_POSTFIX):
+        new_method_name += _MOVED_METHOD_POSTFIX
+    return _moved_decorator('Method', new_method_name, message=message,
+                            version=version, removal_version=removal_version,
+                            stacklevel=stacklevel,
+                            attr_postfix=_MOVED_METHOD_POSTFIX)
+
+
 def moved_property(new_attribute_name, message=None,
                    version=None, removal_version=None, stacklevel=3):
     """Decorates a *instance* property that was moved to another location."""
-
     return _moved_decorator('Property', new_attribute_name, message=message,
                             version=version, removal_version=removal_version,
                             stacklevel=stacklevel)
