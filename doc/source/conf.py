@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import datetime
 import os
 import sys
 
@@ -22,8 +23,8 @@ sys.path.insert(0, os.path.abspath('../..'))
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = [
     'sphinx.ext.autodoc',
-    #'sphinx.ext.intersphinx',
-    'oslosphinx'
+    'sphinx.ext.viewcode',
+    'oslosphinx',
 ]
 
 # autodoc generation is a bit aggressive and a nuisance when doing heavy
@@ -38,7 +39,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'debtcollector'
-copyright = u'2013, OpenStack Foundation'
+copyright = u'%s, OpenStack Foundation' % datetime.date.today().year
 
 # If true, '()' will be appended to :func: etc. cross-reference text.
 add_function_parentheses = True
@@ -73,3 +74,11 @@ latex_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 #intersphinx_mapping = {'http://docs.python.org/': None}
+
+# -- Options for autoddoc ----------------------------------------------------
+
+# Keep source order
+autodoc_member_order = 'bysource'
+
+# Always include members
+autodoc_default_flags = ['members', 'show-inheritance']

@@ -1,19 +1,23 @@
-.. debtcollector documentation master file, created by
-   sphinx-quickstart on Tue Jul  9 22:26:36 2013.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to debtcollector's documentation!
-========================================================
+=========================================
 
-Contents:
+.. include:: ../../README.rst
+
+.. note::
+
+    It should be noted that even though it is designed with OpenStack
+    integration in mind, and that is where most of its *current*
+    integration is it aims to be generally usable and useful in any
+    project.
+
+Contents
+--------
 
 .. toctree::
    :maxdepth: 2
 
-   readme
    installation
-   usage
+   api
    contributing
 
 Indices and tables
