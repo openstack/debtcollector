@@ -1,7 +1,7 @@
 Debtcollector
 =============
 
-A collection of python patterns that help you collect your technical debt in a
+A collection of Python patterns that help you collect your technical debt in a
 non-destructive manner (following deprecation patterns and strategies and
 so-on).
 
