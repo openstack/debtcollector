@@ -21,3 +21,8 @@ Renames
 -------
 
 .. automodule:: debtcollector.renames
+
+Removals
+--------
+
+.. automodule:: debtcollector.removals

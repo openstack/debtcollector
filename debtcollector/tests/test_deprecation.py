@@ -15,6 +15,7 @@
 import warnings
 
 from debtcollector import moves
+from debtcollector import removals
 from debtcollector import renames
 from debtcollector.tests import base as test_base
 
@@ -48,6 +49,37 @@ class KittyKat(object):
 class NewHotness(object):
     def hot(self):
         return 'cold'
+
+
+@removals.remove()
+def crimson_lightning(fake_input=None):
+    return fake_input
+
+
+@removals.remove()
+def red_comet():
+    return True
+
+
+@removals.remove()
+class EFSF(object):
+    pass
+
+
+class ThingB(object):
+    @removals.remove()
+    def black_tristars(self):
+        pass
+
+    @removals.remove()
+    @classmethod
+    def white_wolf(cls):
+        pass
+
+    @removals.remove()
+    @staticmethod
+    def blue_giant():
+        pass
 
 
 OldHotness = moves.moved_class(NewHotness, 'OldHotness', __name__)
@@ -147,3 +179,62 @@ class RenamedKwargTest(test_base.TestCase):
             warnings.simplefilter("always")
             self.assertEqual((1, 2), blip_blop(blop=2))
         self.assertEqual(0, len(capture))
+
+
+class RemovalTests(test_base.TestCase):
+    def test_function_args(self):
+        self.assertEqual(666, crimson_lightning(666))
+
+    def test_function_noargs(self):
+        self.assertTrue(red_comet())
+
+    def test_warnings_emitted_function_args(self):
+        with warnings.catch_warnings(record=True) as capture:
+            warnings.simplefilter("always")
+            self.assertEqual(666, crimson_lightning(666))
+        self.assertEqual(1, len(capture))
+        w = capture[0]
+        self.assertEqual(DeprecationWarning, w.category)
+
+    def test_warnings_emitted_function_noargs(self):
+        with warnings.catch_warnings(record=True) as capture:
+            warnings.simplefilter("always")
+            self.assertTrue(red_comet())
+        self.assertEqual(1, len(capture))
+        w = capture[0]
+        self.assertEqual(DeprecationWarning, w.category)
+
+    def test_warnings_emitted_class(self):
+        with warnings.catch_warnings(record=True) as capture:
+            warnings.simplefilter("always")
+            EFSF()
+        self.assertEqual(1, len(capture))
+        w = capture[0]
+        self.assertEqual(DeprecationWarning, w.category)
+
+    def test_warnings_emitted_instancemethod(self):
+        zeon = ThingB()
+        with warnings.catch_warnings(record=True) as capture:
+            warnings.simplefilter("always")
+            zeon.black_tristars()
+        self.assertEqual(1, len(capture))
+        w = capture[0]
+        self.assertEqual(DeprecationWarning, w.category)
+
+    def test_warnings_emitted_classmethod(self):
+        zeon = ThingB()
+        with warnings.catch_warnings(record=True) as capture:
+            warnings.simplefilter("always")
+            zeon.white_wolf()
+        self.assertEqual(1, len(capture))
+        w = capture[0]
+        self.assertEqual(DeprecationWarning, w.category)
+
+    def test_warnings_emitted_staticmethod(self):
+        zeon = ThingB()
+        with warnings.catch_warnings(record=True) as capture:
+            warnings.simplefilter("always")
+            zeon.blue_giant()
+        self.assertEqual(1, len(capture))
+        w = capture[0]
+        self.assertEqual(DeprecationWarning, w.category)
