@@ -18,6 +18,7 @@ Contents
 
    installation
    api
+   examples
    contributing
 
 Indices and tables
