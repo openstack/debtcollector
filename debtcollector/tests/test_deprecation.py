@@ -256,3 +256,14 @@ class RemovalTests(test_base.TestCase):
         self.assertEqual(1, len(capture))
         w = capture[0]
         self.assertEqual(DeprecationWarning, w.category)
+
+    def test_removed_module(self):
+        with warnings.catch_warnings(record=True) as capture:
+            warnings.simplefilter("always")
+            removals.removed_module(__name__)
+        self.assertEqual(1, len(capture))
+        w = capture[0]
+        self.assertEqual(DeprecationWarning, w.category)
+
+    def test_removed_module_bad_type(self):
+        self.assertRaises(TypeError, removals.removed_module, 2)
