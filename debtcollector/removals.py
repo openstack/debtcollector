@@ -16,6 +16,7 @@ import functools
 import inspect
 
 from oslo_utils import reflection
+import six
 import wrapt
 
 from debtcollector import _utils
@@ -92,3 +93,25 @@ def remove(f=None, message=None, version=None, removal_version=None,
         _utils.deprecation(out_message, stacklevel)
         return f(*args, **kwargs)
     return wrapper(f)
+
+
+def removed_kwarg(old_name, message=None,
+                  version=None, removal_version=None, stacklevel=3):
+    """Decorates a kwarg accepting function to deprecate a removed kwarg."""
+
+    prefix = "Using the '%s' argument is deprecated" % old_name
+    out_message = _utils.generate_message(
+        prefix, postfix=None, message=message, version=version,
+        removal_version=removal_version)
+
+    def decorator(f):
+
+        @six.wraps(f)
+        def wrapper(*args, **kwargs):
+            if old_name in kwargs:
+                _utils.deprecation(out_message, stacklevel=stacklevel)
+            return f(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
