@@ -2,6 +2,44 @@
 Examples
 ========
 
+Removing a class/method/function
+--------------------------------
+
+To signal to a user that a method (staticmethod, classmethod, or regular
+instance method) or a class or function is going to be removed at some point
+in the future the :py:func:`~debtcollector.removals.remove` function/decorator
+can be used to achieve this in a non-destructive manner.
+
+A basic example to do just this (on a method/function):
+
+.. doctest::
+
+    >>> from debtcollector import removals
+    >>> import warnings
+    >>> warnings.simplefilter('always')
+    >>> class Car(object):
+    ...   @removals.remove
+    ...   def start(self):
+    ...     pass
+    ...
+    >>> c = Car()
+    >>> c.start()
+    __main__:1: DeprecationWarning: Using function/method Car.start is deprecated
+
+A basic example to do just this (on a class):
+
+.. doctest::
+
+    >>> from debtcollector import removals
+    >>> import warnings
+    >>> warnings.simplefilter('always')
+    >>> @removals.remove
+    ... class Pinto(object):
+    ...   pass
+    ...
+    >>> p = Pinto()
+    __main__:1: DeprecationWarning: Using class Pinto is deprecated
+
 Moving a method
 ---------------
 
