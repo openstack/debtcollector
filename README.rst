@@ -1,9 +1,8 @@
 Debtcollector
 =============
 
-A collection of Python patterns that help you collect your technical debt in a
-non-destructive manner (following deprecation patterns and strategies and
-so-on).
+A collection of Python deprecation patterns and strategies that help you
+collect your technical debt in a non-destructive manner.
 
 * Free software: Apache license
 * Documentation: http://docs.openstack.org/developer/debtcollector
