@@ -47,19 +47,22 @@ def remove(f=None, message=None, version=None, removal_version=None,
             f_name = f.__qualname__
             qualified = True
             if inspect.isclass(f):
-                _prefix_pre = "Using class"
+                prefix_pre = "Using class"
+                thing_post = ''
             else:
-                _prefix_pre = "Using function/method"
+                prefix_pre = "Using function/method"
+                thing_post = '()'
         except AttributeError:
             f_name = f.__name__
             qualified = False
 
         if not qualified:
-            _prefix_pre = "Using function/method"
+            prefix_pre = "Using function/method"
             if instance is None:
                 # Decorator was used on a class
                 if inspect.isclass(f):
-                    _prefix_pre = "Using class"
+                    prefix_pre = "Using class"
+                    thing_post = ''
                     module_name = inspect.getmodule(f).__name__
                     if module_name == '__main__':
                         f_name = reflection.get_class_name(
@@ -70,23 +73,27 @@ def remove(f=None, message=None, version=None, removal_version=None,
                     base_name = None
                 # Decorator was a used on a function
                 else:
+                    thing_post = '()'
                     module_name = inspect.getmodule(f).__name__
                     if module_name != '__main__':
                         f_name = reflection.get_callable_name(f)
                     base_name = None
             # Decorator was used on a classmethod or instancemethod
             else:
+                thing_post = '()'
                 base_name = reflection.get_class_name(instance,
                                                       fully_qualified=False)
             if base_name:
-                function_name = ".".join([base_name, f_name])
+                thing_name = ".".join([base_name, f_name])
             else:
-                function_name = f_name
+                thing_name = f_name
         else:
-            function_name = f_name
-        _prefix = _prefix_pre + " %s is deprecated" % function_name
+            thing_name = f_name
+        if thing_post:
+            thing_name += thing_post
+        prefix = prefix_pre + " '%s' is deprecated" % (thing_name)
         out_message = _utils.generate_message(
-            _prefix,
+            prefix,
             version=version,
             removal_version=removal_version,
             message=message)
