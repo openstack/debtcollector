@@ -1,7 +1,8 @@
 Welcome to debtcollector's documentation!
 =========================================
 
-.. include:: ../../README.rst
+A collection of Python deprecation patterns and strategies that help you
+collect your technical debt in a non-destructive manner.
 
 .. note::
 
