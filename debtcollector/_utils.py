@@ -42,6 +42,14 @@ def deprecation(message, stacklevel=None, category=None):
         warnings.warn(message, category=category, stacklevel=stacklevel)
 
 
+def get_qualified_name(obj):
+    # Prefer the py3.x name (if we can get at it...)
+    try:
+        return (True, obj.__qualname__)
+    except AttributeError:
+        return (False, obj.__name__)
+
+
 def generate_message(prefix, postfix=None, message=None,
                      version=None, removal_version=None):
     """Helper to generate a common message 'style' for deprecation helpers."""
