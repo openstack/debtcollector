@@ -14,8 +14,6 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import functools
-
 from oslo_utils import reflection
 import six
 
@@ -102,11 +100,7 @@ def moved_class(new_class, old_class_name, old_module_name,
 
     def decorator(f):
 
-        # Use the older functools until the following is available:
-        #
-        # https://bitbucket.org/gutworth/six/issue/105
-
-        @functools.wraps(f, assigned=("__name__", "__doc__"))
+        @six.wraps(f, assigned=("__name__", "__doc__"))
         def wrapper(self, *args, **kwargs):
             _utils.deprecation(out_message, stacklevel=stacklevel)
             return f(self, *args, **kwargs)
