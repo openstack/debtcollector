@@ -23,7 +23,8 @@ _KWARG_RENAMED_PREFIX_TPL = "Using the '%s' argument is deprecated"
 
 
 def renamed_kwarg(old_name, new_name, message=None,
-                  version=None, removal_version=None, stacklevel=3):
+                  version=None, removal_version=None, stacklevel=3,
+                  category=None):
     """Decorates a kwarg accepting function to deprecate a renamed kwarg."""
 
     prefix = _KWARG_RENAMED_PREFIX_TPL % old_name
@@ -37,7 +38,8 @@ def renamed_kwarg(old_name, new_name, message=None,
         @six.wraps(f)
         def wrapper(*args, **kwargs):
             if old_name in kwargs:
-                _utils.deprecation(out_message, stacklevel=stacklevel)
+                _utils.deprecation(out_message,
+                                   stacklevel=stacklevel, category=category)
             return f(*args, **kwargs)
 
         return wrapper

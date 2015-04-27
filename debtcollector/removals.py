@@ -35,7 +35,7 @@ def _get_module_name(mod):
 
 
 def remove(f=None, message=None, version=None, removal_version=None,
-           stacklevel=3):
+           stacklevel=3, category=None):
     """Decorates a function, method, or class to emit a deprecation warning
 
     :param str message: A message to include in the deprecation warning
@@ -45,12 +45,15 @@ def remove(f=None, message=None, version=None, removal_version=None,
                                 version
     :param int stacklevel: How many entries deep in the call stack before
                            ignoring
+    :param type category: warnings message category (this defaults to
+                          ``DeprecationWarning`` when none is provided)
     """
     if f is None:
         return functools.partial(remove, message=message,
                                  version=version,
                                  removal_version=removal_version,
-                                 stacklevel=stacklevel)
+                                 stacklevel=stacklevel,
+                                 category=category)
 
     @wrapt.decorator
     def wrapper(f, instance, args, kwargs):
@@ -102,13 +105,15 @@ def remove(f=None, message=None, version=None, removal_version=None,
             version=version,
             removal_version=removal_version,
             message=message)
-        _utils.deprecation(out_message, stacklevel)
+        _utils.deprecation(out_message,
+                           stacklevel=stacklevel, category=category)
         return f(*args, **kwargs)
     return wrapper(f)
 
 
 def removed_kwarg(old_name, message=None,
-                  version=None, removal_version=None, stacklevel=3):
+                  version=None, removal_version=None, stacklevel=3,
+                  category=None):
     """Decorates a kwarg accepting function to deprecate a removed kwarg."""
 
     prefix = "Using the '%s' argument is deprecated" % old_name
@@ -121,7 +126,8 @@ def removed_kwarg(old_name, message=None,
         @six.wraps(f)
         def wrapper(*args, **kwargs):
             if old_name in kwargs:
-                _utils.deprecation(out_message, stacklevel=stacklevel)
+                _utils.deprecation(out_message,
+                                   stacklevel=stacklevel, category=category)
             return f(*args, **kwargs)
 
         return wrapper
@@ -130,7 +136,8 @@ def removed_kwarg(old_name, message=None,
 
 
 def removed_module(module, replacement=None, message=None,
-                   version=None, removal_version=None, stacklevel=3):
+                   version=None, removal_version=None, stacklevel=3,
+                   category=None):
     """Helper to be called inside a module to emit a deprecation warning
 
     :param str replacment: A location (or information about) of any potential
@@ -142,6 +149,8 @@ def removed_module(module, replacement=None, message=None,
                                 version
     :param int stacklevel: How many entries deep in the call stack before
                            ignoring
+    :param type category: warnings message category (this defaults to
+                          ``DeprecationWarning`` when none is provided)
     """
     if inspect.ismodule(module):
         module_name = _get_module_name(module)
@@ -160,4 +169,5 @@ def removed_module(module, replacement=None, message=None,
                                           postfix=postfix, message=message,
                                           version=version,
                                           removal_version=removal_version)
-    _utils.deprecation(out_message, stacklevel)
+    _utils.deprecation(out_message,
+                       stacklevel=stacklevel, category=category)

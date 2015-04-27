@@ -26,7 +26,7 @@ _MOVED_METHOD_POSTFIX = "()"
 
 def _moved_decorator(kind, new_attribute_name, message=None,
                      version=None, removal_version=None, stacklevel=3,
-                     attr_postfix=None):
+                     attr_postfix=None, category=None):
     """Decorates a method/property that was moved to another location."""
 
     def decorator(f):
@@ -53,7 +53,8 @@ def _moved_decorator(kind, new_attribute_name, message=None,
             out_message = _utils.generate_message(
                 prefix, message=message,
                 version=version, removal_version=removal_version)
-            _utils.deprecation(out_message, stacklevel=stacklevel)
+            _utils.deprecation(out_message, stacklevel=stacklevel,
+                               category=category)
             return f(self, *args, **kwargs)
 
         return wrapper
@@ -62,27 +63,30 @@ def _moved_decorator(kind, new_attribute_name, message=None,
 
 
 def moved_method(new_method_name, message=None,
-                 version=None, removal_version=None, stacklevel=3):
+                 version=None, removal_version=None, stacklevel=3,
+                 category=None):
     """Decorates a *instance* method that was moved to another location."""
     if not new_method_name.endswith(_MOVED_METHOD_POSTFIX):
         new_method_name += _MOVED_METHOD_POSTFIX
     return _moved_decorator('Method', new_method_name, message=message,
                             version=version, removal_version=removal_version,
                             stacklevel=stacklevel,
-                            attr_postfix=_MOVED_METHOD_POSTFIX)
+                            attr_postfix=_MOVED_METHOD_POSTFIX,
+                            category=category)
 
 
 def moved_property(new_attribute_name, message=None,
-                   version=None, removal_version=None, stacklevel=3):
+                   version=None, removal_version=None, stacklevel=3,
+                   category=None):
     """Decorates a *instance* property that was moved to another location."""
     return _moved_decorator('Property', new_attribute_name, message=message,
                             version=version, removal_version=removal_version,
-                            stacklevel=stacklevel)
+                            stacklevel=stacklevel, category=category)
 
 
 def moved_class(new_class, old_class_name, old_module_name,
                 message=None, version=None, removal_version=None,
-                stacklevel=3):
+                stacklevel=3, category=None):
     """Deprecates a class that was moved to another location.
 
     This creates a 'new-old' type that can be used for a
@@ -102,7 +106,8 @@ def moved_class(new_class, old_class_name, old_module_name,
 
         @six.wraps(f, assigned=("__name__", "__doc__"))
         def wrapper(self, *args, **kwargs):
-            _utils.deprecation(out_message, stacklevel=stacklevel)
+            _utils.deprecation(out_message, stacklevel=stacklevel,
+                               category=category)
             return f(self, *args, **kwargs)
 
         return wrapper

@@ -25,6 +25,11 @@ def blip_blop(blip=1, blop=1):
     return (blip, blop)
 
 
+@renames.renamed_kwarg('blip', 'blop', category=PendingDeprecationWarning)
+def blip_blop_2(blip=1, blop=1):
+    return (blip, blop)
+
+
 class WoofWoof(object):
     @property
     def bark(self):
@@ -35,11 +40,20 @@ class WoofWoof(object):
     def burk(self):
         return self.bark
 
+    @property
+    @moves.moved_property('bark', category=PendingDeprecationWarning)
+    def berk(self):
+        return self.bark
+
 
 class KittyKat(object):
 
     @moves.moved_method('supermeow')
     def meow(self):
+        return self.supermeow()
+
+    @moves.moved_method('supermeow', category=PendingDeprecationWarning)
+    def maow(self):
         return self.supermeow()
 
     def supermeow(self):
@@ -56,8 +70,18 @@ def crimson_lightning(fake_input=None):
     return fake_input
 
 
+@removals.remove(category=PendingDeprecationWarning)
+def crimson_lightning_to_remove(fake_input=None):
+    return fake_input
+
+
 @removals.remove()
 def red_comet():
+    return True
+
+
+@removals.remove(category=PendingDeprecationWarning)
+def blue_comet():
     return True
 
 
@@ -66,9 +90,18 @@ class EFSF(object):
     pass
 
 
+@removals.remove(category=PendingDeprecationWarning)
+class EFSF_2(object):
+    pass
+
+
 class ThingB(object):
     @removals.remove()
     def black_tristars(self):
+        pass
+
+    @removals.remove(category=PendingDeprecationWarning)
+    def blue_tristars(self):
         pass
 
     @removals.remove()
@@ -76,13 +109,26 @@ class ThingB(object):
     def white_wolf(cls):
         pass
 
+    @removals.remove(category=PendingDeprecationWarning)
+    @classmethod
+    def yellow_wolf(cls):
+        pass
+
     @removals.remove()
     @staticmethod
     def blue_giant():
         pass
 
+    @removals.remove(category=PendingDeprecationWarning)
+    @staticmethod
+    def green_giant():
+        pass
+
 
 OldHotness = moves.moved_class(NewHotness, 'OldHotness', __name__)
+
+OldHotness2 = moves.moved_class(NewHotness, 'OldHotness', __name__,
+                                category=PendingDeprecationWarning)
 
 
 class MovedInheritableClassTest(test_base.TestCase):
@@ -98,6 +144,14 @@ class MovedInheritableClassTest(test_base.TestCase):
         self.assertEqual(1, len(capture))
         w = capture[0]
         self.assertEqual(DeprecationWarning, w.category)
+
+    def test_warnings_emitted_creation_pending(self):
+        with warnings.catch_warnings(record=True) as capture:
+            warnings.simplefilter("always")
+            OldHotness2()
+        self.assertEqual(1, len(capture))
+        w = capture[0]
+        self.assertEqual(PendingDeprecationWarning, w.category)
 
     def test_existing_refer_subclass(self):
 
@@ -128,6 +182,15 @@ class MovedPropertyTest(test_base.TestCase):
         w = capture[0]
         self.assertEqual(DeprecationWarning, w.category)
 
+    def test_warnings_emitted_pending(self):
+        dog = WoofWoof()
+        with warnings.catch_warnings(record=True) as capture:
+            warnings.simplefilter("always")
+            self.assertEqual('woof', dog.berk)
+        self.assertEqual(1, len(capture))
+        w = capture[0]
+        self.assertEqual(PendingDeprecationWarning, w.category)
+
     def test_warnings_not_emitted(self):
         dog = WoofWoof()
         with warnings.catch_warnings(record=True) as capture:
@@ -151,6 +214,15 @@ class MovedMethodTest(test_base.TestCase):
         w = capture[0]
         self.assertEqual(DeprecationWarning, w.category)
 
+    def test_warnings_emitted_pending(self):
+        c = KittyKat()
+        with warnings.catch_warnings(record=True) as capture:
+            warnings.simplefilter("always")
+            self.assertEqual('supermeow', c.maow())
+        self.assertEqual(1, len(capture))
+        w = capture[0]
+        self.assertEqual(PendingDeprecationWarning, w.category)
+
     def test_warnings_not_emitted(self):
         c = KittyKat()
         with warnings.catch_warnings(record=True) as capture:
@@ -173,6 +245,14 @@ class RenamedKwargTest(test_base.TestCase):
         self.assertEqual(1, len(capture))
         w = capture[0]
         self.assertEqual(DeprecationWarning, w.category)
+
+    def test_warnings_emitted_pending(self):
+        with warnings.catch_warnings(record=True) as capture:
+            warnings.simplefilter("always")
+            self.assertEqual((2, 1), blip_blop_2(blip=2))
+        self.assertEqual(1, len(capture))
+        w = capture[0]
+        self.assertEqual(PendingDeprecationWarning, w.category)
 
     def test_warnings_not_emitted(self):
         with warnings.catch_warnings(record=True) as capture:
@@ -206,6 +286,24 @@ class RemovalTests(test_base.TestCase):
             self.assertEqual(2, f())
         self.assertEqual(0, len(capture))
 
+    def test_pending_deprecated_kwarg(self):
+
+        @removals.removed_kwarg('b', category=PendingDeprecationWarning)
+        def f(b=2):
+            return b
+
+        with warnings.catch_warnings(record=True) as capture:
+            warnings.simplefilter("always")
+            self.assertEqual(3, f(b=3))
+        self.assertEqual(1, len(capture))
+        w = capture[0]
+        self.assertEqual(PendingDeprecationWarning, w.category)
+
+        with warnings.catch_warnings(record=True) as capture:
+            warnings.simplefilter("always")
+            self.assertEqual(2, f())
+        self.assertEqual(0, len(capture))
+
     def test_warnings_emitted_function_args(self):
         with warnings.catch_warnings(record=True) as capture:
             warnings.simplefilter("always")
@@ -213,6 +311,14 @@ class RemovalTests(test_base.TestCase):
         self.assertEqual(1, len(capture))
         w = capture[0]
         self.assertEqual(DeprecationWarning, w.category)
+
+    def test_pending_warnings_emitted_function_args(self):
+        with warnings.catch_warnings(record=True) as capture:
+            warnings.simplefilter("always")
+            self.assertEqual(666, crimson_lightning_to_remove(666))
+        self.assertEqual(1, len(capture))
+        w = capture[0]
+        self.assertEqual(PendingDeprecationWarning, w.category)
 
     def test_warnings_emitted_function_noargs(self):
         with warnings.catch_warnings(record=True) as capture:
@@ -222,6 +328,14 @@ class RemovalTests(test_base.TestCase):
         w = capture[0]
         self.assertEqual(DeprecationWarning, w.category)
 
+    def test_pending_warnings_emitted_function_noargs(self):
+        with warnings.catch_warnings(record=True) as capture:
+            warnings.simplefilter("always")
+            self.assertTrue(blue_comet())
+        self.assertEqual(1, len(capture))
+        w = capture[0]
+        self.assertEqual(PendingDeprecationWarning, w.category)
+
     def test_warnings_emitted_class(self):
         with warnings.catch_warnings(record=True) as capture:
             warnings.simplefilter("always")
@@ -229,6 +343,14 @@ class RemovalTests(test_base.TestCase):
         self.assertEqual(1, len(capture))
         w = capture[0]
         self.assertEqual(DeprecationWarning, w.category)
+
+    def test_pending_warnings_emitted_class(self):
+        with warnings.catch_warnings(record=True) as capture:
+            warnings.simplefilter("always")
+            EFSF_2()
+        self.assertEqual(1, len(capture))
+        w = capture[0]
+        self.assertEqual(PendingDeprecationWarning, w.category)
 
     def test_warnings_emitted_instancemethod(self):
         zeon = ThingB()
@@ -238,6 +360,24 @@ class RemovalTests(test_base.TestCase):
         self.assertEqual(1, len(capture))
         w = capture[0]
         self.assertEqual(DeprecationWarning, w.category)
+
+    def test_pending_warnings_emitted_instancemethod(self):
+        zeon = ThingB()
+        with warnings.catch_warnings(record=True) as capture:
+            warnings.simplefilter("always")
+            zeon.blue_tristars()
+        self.assertEqual(1, len(capture))
+        w = capture[0]
+        self.assertEqual(PendingDeprecationWarning, w.category)
+
+    def test_pending_warnings_emitted_classmethod(self):
+        zeon = ThingB()
+        with warnings.catch_warnings(record=True) as capture:
+            warnings.simplefilter("always")
+            zeon.yellow_wolf()
+        self.assertEqual(1, len(capture))
+        w = capture[0]
+        self.assertEqual(PendingDeprecationWarning, w.category)
 
     def test_warnings_emitted_classmethod(self):
         zeon = ThingB()
@@ -257,6 +397,15 @@ class RemovalTests(test_base.TestCase):
         w = capture[0]
         self.assertEqual(DeprecationWarning, w.category)
 
+    def test_pending_warnings_emitted_staticmethod(self):
+        zeon = ThingB()
+        with warnings.catch_warnings(record=True) as capture:
+            warnings.simplefilter("always")
+            zeon.green_giant()
+        self.assertEqual(1, len(capture))
+        w = capture[0]
+        self.assertEqual(PendingDeprecationWarning, w.category)
+
     def test_removed_module(self):
         with warnings.catch_warnings(record=True) as capture:
             warnings.simplefilter("always")
@@ -264,6 +413,15 @@ class RemovalTests(test_base.TestCase):
         self.assertEqual(1, len(capture))
         w = capture[0]
         self.assertEqual(DeprecationWarning, w.category)
+
+    def test_pending_removed_module(self):
+        with warnings.catch_warnings(record=True) as capture:
+            warnings.simplefilter("always")
+            removals.removed_module(__name__,
+                                    category=PendingDeprecationWarning)
+        self.assertEqual(1, len(capture))
+        w = capture[0]
+        self.assertEqual(PendingDeprecationWarning, w.category)
 
     def test_removed_module_bad_type(self):
         self.assertRaises(TypeError, removals.removed_module, 2)

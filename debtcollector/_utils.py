@@ -17,7 +17,7 @@
 import warnings
 
 
-def deprecation(message, stacklevel=None):
+def deprecation(message, stacklevel=None, category=None):
     """Warns about some type of deprecation that has been (or will be) made.
 
     This helper function makes it easier to interact with the warnings module
@@ -34,11 +34,12 @@ def deprecation(message, stacklevel=None):
     avoid doing by always giving at *least* N + 1 release for users to address
     the deprecation warnings).
     """
+    if category is None:
+        category = DeprecationWarning
     if stacklevel is None:
-        warnings.warn(message, category=DeprecationWarning)
+        warnings.warn(message, category=category)
     else:
-        warnings.warn(message,
-                      category=DeprecationWarning, stacklevel=stacklevel)
+        warnings.warn(message, category=category, stacklevel=stacklevel)
 
 
 def generate_message(prefix, postfix=None, message=None,
