@@ -22,16 +22,8 @@ import wrapt
 from debtcollector import _utils
 
 
-def _get_qualified_name(obj):
-    # Prefer the py3.x name (if we can get at it...)
-    try:
-        return (True, obj.__qualname__)
-    except AttributeError:
-        return (False, obj.__name__)
-
-
 def _get_module_name(mod):
-    return _get_qualified_name(mod)[1]
+    return _utils.get_qualified_name(mod)[1]
 
 
 def remove(f=None, message=None, version=None, removal_version=None,
@@ -57,7 +49,7 @@ def remove(f=None, message=None, version=None, removal_version=None,
 
     @wrapt.decorator
     def wrapper(f, instance, args, kwargs):
-        qualified, f_name = _get_qualified_name(f)
+        qualified, f_name = _utils.get_qualified_name(f)
         if qualified:
             if inspect.isclass(f):
                 prefix_pre = "Using class"
@@ -157,7 +149,7 @@ def removed_module(module, replacement=None, message=None,
     elif isinstance(module, six.string_types):
         module_name = module
     else:
-        _qual, type_name = _get_qualified_name(type(module))
+        _qual, type_name = _utils.get_qualified_name(type(module))
         raise TypeError("Unexpected module type '%s' (expected string or"
                         " module type only)" % type_name)
     prefix = "The '%s' module usage is deprecated" % module_name

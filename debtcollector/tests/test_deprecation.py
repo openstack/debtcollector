@@ -132,6 +132,9 @@ OldHotness2 = moves.moved_class(NewHotness, 'OldHotness', __name__,
 
 
 class MovedInheritableClassTest(test_base.TestCase):
+    def test_broken_type_class(self):
+        self.assertRaises(TypeError, moves.moved_class, 'b', __name__)
+
     def test_basics(self):
         old = OldHotness()
         self.assertIsInstance(old, NewHotness)

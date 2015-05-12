@@ -14,6 +14,8 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import inspect
+
 from oslo_utils import reflection
 import six
 
@@ -30,14 +32,7 @@ def _moved_decorator(kind, new_attribute_name, message=None,
     """Decorates a method/property that was moved to another location."""
 
     def decorator(f):
-        try:
-            # Prefer the py3.x name (if we can get at it...)
-            old_attribute_name = f.__qualname__
-            fully_qualified = True
-        except AttributeError:
-            old_attribute_name = f.__name__
-            fully_qualified = False
-
+        fully_qualified, old_attribute_name = _utils.get_qualified_name(f)
         if attr_postfix:
             old_attribute_name += attr_postfix
 
@@ -94,6 +89,11 @@ def moved_class(new_class, old_class_name, old_module_name,
     when the old locations class is initialized, telling where the new and
     improved location for the old class now is.
     """
+
+    if not inspect.isclass(new_class):
+        _qual, type_name = _utils.get_qualified_name(type(new_class))
+        raise TypeError("Unexpected class type '%s' (expected"
+                        " class type only)" % type_name)
 
     old_name = ".".join((old_module_name, old_class_name))
     new_name = reflection.get_class_name(new_class)
