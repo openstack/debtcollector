@@ -14,7 +14,22 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import inspect
+import types
 import warnings
+
+import six
+
+try:
+    _TYPE_TYPE = types.TypeType
+except AttributeError:
+    _TYPE_TYPE = type
+
+
+# See: https://docs.python.org/2/library/__builtin__.html#module-__builtin__
+# and see https://docs.python.org/2/reference/executionmodel.html (and likely
+# others)...
+_BUILTIN_MODULES = ('builtins', '__builtin__', '__builtins__', 'exceptions')
 
 
 def deprecation(message, stacklevel=None, category=None):
@@ -68,3 +83,85 @@ def generate_message(prefix, postfix=None, message=None,
     if message:
         message_components.append(": %s" % message)
     return ''.join(message_components)
+
+
+def get_class_name(obj, fully_qualified=True):
+    """Get class name for object.
+
+    If object is a type, fully qualified name of the type is returned.
+    Else, fully qualified name of the type of the object is returned.
+    For builtin types, just name is returned.
+    """
+    if not isinstance(obj, six.class_types):
+        obj = type(obj)
+    try:
+        built_in = obj.__module__ in _BUILTIN_MODULES
+    except AttributeError:
+        pass
+    else:
+        if built_in:
+            try:
+                return obj.__qualname__
+            except AttributeError:
+                return obj.__name__
+    pieces = []
+    try:
+        pieces.append(obj.__qualname__)
+    except AttributeError:
+        pieces.append(obj.__name__)
+    if fully_qualified:
+        try:
+            pieces.insert(0, obj.__module__)
+        except AttributeError:
+            pass
+    return '.'.join(pieces)
+
+
+def get_method_self(method):
+    """Gets the ``self`` object attached to this method (or none)."""
+    if not inspect.ismethod(method):
+        return None
+    try:
+        return six.get_method_self(method)
+    except AttributeError:
+        return None
+
+
+def get_callable_name(function):
+    """Generate a name from callable.
+
+    Tries to do the best to guess fully qualified callable name.
+    """
+    method_self = get_method_self(function)
+    if method_self is not None:
+        # This is a bound method.
+        if isinstance(method_self, six.class_types):
+            # This is a bound class method.
+            im_class = method_self
+        else:
+            im_class = type(method_self)
+        try:
+            parts = (im_class.__module__, function.__qualname__)
+        except AttributeError:
+            parts = (im_class.__module__, im_class.__name__, function.__name__)
+    elif inspect.ismethod(function) or inspect.isfunction(function):
+        # This could be a function, a static method, a unbound method...
+        try:
+            parts = (function.__module__, function.__qualname__)
+        except AttributeError:
+            if hasattr(function, 'im_class'):
+                # This is a unbound method, which exists only in python 2.x
+                im_class = function.im_class
+                parts = (im_class.__module__,
+                         im_class.__name__, function.__name__)
+            else:
+                parts = (function.__module__, function.__name__)
+    else:
+        im_class = type(function)
+        if im_class is _TYPE_TYPE:
+            im_class = function
+        try:
+            parts = (im_class.__module__, im_class.__qualname__)
+        except AttributeError:
+            parts = (im_class.__module__, im_class.__name__)
+    return '.'.join(parts)

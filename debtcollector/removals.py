@@ -15,7 +15,6 @@
 import functools
 import inspect
 
-from oslo_utils import reflection
 import six
 import wrapt
 
@@ -67,22 +66,22 @@ def remove(f=None, message=None, version=None, removal_version=None,
                     thing_post = ''
                     module_name = _get_module_name(inspect.getmodule(f))
                     if module_name == '__main__':
-                        f_name = reflection.get_class_name(
+                        f_name = _utils.get_class_name(
                             f, fully_qualified=False)
                     else:
-                        f_name = reflection.get_class_name(
+                        f_name = _utils.get_class_name(
                             f, fully_qualified=True)
                 # Decorator was a used on a function
                 else:
                     thing_post = '()'
                     module_name = _get_module_name(inspect.getmodule(f))
                     if module_name != '__main__':
-                        f_name = reflection.get_callable_name(f)
+                        f_name = _utils.get_callable_name(f)
             # Decorator was used on a classmethod or instancemethod
             else:
                 thing_post = '()'
-                base_name = reflection.get_class_name(instance,
-                                                      fully_qualified=False)
+                base_name = _utils.get_class_name(instance,
+                                                  fully_qualified=False)
             if base_name:
                 thing_name = ".".join([base_name, f_name])
             else:

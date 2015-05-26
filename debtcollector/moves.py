@@ -16,7 +16,6 @@
 
 import inspect
 
-from oslo_utils import reflection
 import six
 
 from debtcollector import _utils
@@ -38,7 +37,7 @@ def _moved_decorator(kind, new_attribute_name, message=None,
 
         @six.wraps(f)
         def wrapper(self, *args, **kwargs):
-            base_name = reflection.get_class_name(self, fully_qualified=False)
+            base_name = _utils.get_class_name(self, fully_qualified=False)
             if fully_qualified:
                 old_name = old_attribute_name
             else:
@@ -96,7 +95,7 @@ def moved_class(new_class, old_class_name, old_module_name,
                         " class type only)" % type_name)
 
     old_name = ".".join((old_module_name, old_class_name))
-    new_name = reflection.get_class_name(new_class)
+    new_name = _utils.get_class_name(new_class)
     prefix = _CLASS_MOVED_PREFIX_TPL % (old_name, new_name)
     out_message = _utils.generate_message(
         prefix, message=message, version=version,
