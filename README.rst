@@ -1,11 +1,11 @@
 Debtcollector
 =============
 
-.. image:: https://pypip.in/version/debtcollector/badge.svg
+.. image:: https://img.shields.io/pypi/v/debtcollector.svg
     :target: https://pypi.python.org/pypi/debtcollector/
     :alt: Latest Version
 
-.. image:: https://pypip.in/download/debtcollector/badge.svg?period=month
+.. image:: https://img.shields.io/pypi/dm/debtcollector.svg
     :target: https://pypi.python.org/pypi/debtcollector/
     :alt: Downloads
 
