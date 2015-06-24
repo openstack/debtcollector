@@ -24,7 +24,7 @@ A basic example to do just this (on a method/function):
     ...
     >>> c = Car()
     >>> c.start()
-    __main__:1: DeprecationWarning: Using function/method Car.start is deprecated
+    __main__:1: DeprecationWarning: Using function/method 'Car.start()' is deprecated
 
 A basic example to do just this (on a class):
 
@@ -38,7 +38,7 @@ A basic example to do just this (on a class):
     ...   pass
     ...
     >>> p = Pinto()
-    __main__:1: DeprecationWarning: Using class Pinto is deprecated
+    __main__:1: DeprecationWarning: Using class 'Pinto' is deprecated
 
 Moving a method
 ---------------
