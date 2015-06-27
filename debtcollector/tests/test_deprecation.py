@@ -91,6 +91,14 @@ def blue_comet():
     return True
 
 
+def yellow_sun():
+    """Yellow."""
+    return True
+
+
+yellowish_sun = moves.moved_function(yellow_sun, 'yellowish_sun', __name__)
+
+
 @removals.remove()
 class EFSF(object):
     pass
@@ -215,6 +223,21 @@ class MovedPropertyTest(test_base.TestCase):
             warnings.simplefilter("always")
             self.assertEqual('woof', dog.bark)
         self.assertEqual(0, len(capture))
+
+
+class MovedFunctionTest(test_base.TestCase):
+    def test_basics(self):
+        self.assertTrue(yellowish_sun())
+        self.assertTrue(yellow_sun())
+        self.assertEqual("Yellow.", yellowish_sun.__doc__)
+
+    def test_warnings_emitted(self):
+        with warnings.catch_warnings(record=True) as capture:
+            warnings.simplefilter("always")
+            self.assertTrue(yellowish_sun())
+        self.assertEqual(1, len(capture))
+        w = capture[0]
+        self.assertEqual(DeprecationWarning, w.category)
 
 
 class MovedMethodTest(test_base.TestCase):

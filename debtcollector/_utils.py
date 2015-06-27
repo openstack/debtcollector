@@ -164,4 +164,10 @@ def get_callable_name(function):
             parts = (im_class.__module__, im_class.__qualname__)
         except AttributeError:
             parts = (im_class.__module__, im_class.__name__)
-    return '.'.join(parts)
+    # When running under sphinx it appears this can be none? if so just
+    # don't include it...
+    mod, rest = (parts[0], parts[1:])
+    if not mod:
+        return '.'.join(rest)
+    else:
+        return '.'.join(parts)
