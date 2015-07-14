@@ -24,6 +24,11 @@ A basic example to do just this (on a method/function):
     ...
     >>> c = Car()
     >>> c.start()
+
+**Expected output:**
+
+.. testoutput::
+
     __main__:1: DeprecationWarning: Using function/method 'Car.start()' is deprecated
 
 A basic example to do just this (on a class):
@@ -38,6 +43,11 @@ A basic example to do just this (on a class):
     ...   pass
     ...
     >>> p = Pinto()
+
+**Expected output:**
+
+.. testoutput::
+
     __main__:1: DeprecationWarning: Using class 'Pinto' is deprecated
 
 Moving a method
@@ -63,10 +73,15 @@ A basic example to do just this:
     ...
     >>> c = Cat()
     >>> c.mewow()
-    __main__:1: DeprecationWarning: Method 'Cat.mewow()' has moved to 'Cat.meow()'
     'kitty'
     >>> c.meow()
     'kitty'
+
+**Expected output:**
+
+.. testoutput::
+
+    __main__:1: DeprecationWarning: Method 'Cat.mewow()' has moved to 'Cat.meow()'
 
 Moving a property
 -----------------
@@ -93,10 +108,15 @@ A basic example to do just this:
     ...
     >>> d = Dog()
     >>> d.burk
-    __main__:1: DeprecationWarning: Property 'Dog.burk' has moved to 'Dog.bark'
     'woof'
     >>> d.bark
     'woof'
+
+**Expected output:**
+
+.. testoutput::
+
+    __main__:1: DeprecationWarning: Property 'Dog.burk' has moved to 'Dog.bark'
 
 Moving a class
 --------------
@@ -117,8 +137,13 @@ A basic example to do just this:
     ...
     >>> OldWizBang = moves.moved_class(WizBang, 'OldWizBang', __name__)
     >>> a = OldWizBang()
-    __main__:1: DeprecationWarning: Class '__main__.OldWizBang' has moved to '__main__.WizBang'
     >>> b = WizBang()
+
+**Expected output:**
+
+.. testoutput::
+
+    __main__:1: DeprecationWarning: Class '__main__.OldWizBang' has moved to '__main__.WizBang'
 
 Renaming a keyword argument
 ---------------------------
@@ -137,19 +162,20 @@ A basic example to do just this:
     >>> warnings.simplefilter('always')
     >>> @renames.renamed_kwarg('snizzle', 'nizzle')
     ... def do_the_deed(snizzle=True, nizzle=True):
-    ...   print(snizzle)
-    ...   print(nizzle)
+    ...   return (snizzle, nizzle)
     ...
     >>> do_the_deed()
-    True
-    True
+    (True, True)
     >>> do_the_deed(snizzle=False)
-    __main__:1: DeprecationWarning: Using the 'snizzle' argument is deprecated, please use the 'nizzle' argument instead
-    False
-    True
+    (False, True)
     >>> do_the_deed(nizzle=False)
-    True
-    False
+    (True, False)
+
+**Expected output:**
+
+.. testoutput::
+
+    __main__:1: DeprecationWarning: Using the 'snizzle' argument is deprecated, please use the 'nizzle' argument instead
 
 Further customizing the emitted messages
 ----------------------------------------
@@ -173,6 +199,11 @@ A basic example to do just this:
     ...   pass
     ...
     >>> do_the_deed(snizzle=False)
+
+**Expected output:**
+
+.. testoutput::
+
     __main__:1: DeprecationWarning: Using the 'snizzle' argument is deprecated in version '0.5' and will be removed in version '0.7', please use the 'nizzle' argument instead
 
 If the ``removal_version`` is unknown the special character ``?`` can be used
@@ -191,6 +222,11 @@ A basic example to do just this:
     ...   pass
     ...
     >>> do_the_deed(snizzle=False)
+
+**Expected output:**
+
+.. testoutput::
+
     __main__:1: DeprecationWarning: Using the 'snizzle' argument is deprecated in version '0.5' and will be removed in a future version, please use the 'nizzle' argument instead
 
 To further customize the message (with a special postfix) the ``message``
@@ -208,4 +244,9 @@ A basic example to do just this:
     ...   pass
     ...
     >>> do_the_deed(snizzle=False)
+
+**Expected output:**
+
+.. testoutput::
+
     __main__:1: DeprecationWarning: Using the 'snizzle' argument is deprecated, please use the 'nizzle' argument instead: Pretty please stop using it
