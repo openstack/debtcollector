@@ -105,6 +105,22 @@ class ThingB(object):
     def black_tristars(self):
         pass
 
+    @removals.removed_property
+    def green_tristars(self):
+        return 'green'
+
+    @green_tristars.setter
+    def green_tristars(self, value):
+        pass
+
+    @green_tristars.deleter
+    def green_tristars(self):
+        pass
+
+    @removals.removed_property(message="stop using me")
+    def green_blue_tristars(self):
+        return 'green-blue'
+
     @removals.remove(category=PendingDeprecationWarning)
     def blue_tristars(self):
         pass
@@ -323,6 +339,27 @@ class RemovalTests(test_base.TestCase):
             warnings.simplefilter("always")
             self.assertEqual(2, f())
         self.assertEqual(0, len(capture))
+
+    def test_warnings_emitted_property(self):
+        with warnings.catch_warnings(record=True) as capture:
+            warnings.simplefilter("always")
+            o = ThingB()
+            self.assertEqual('green', o.green_tristars)
+            o.green_tristars = 'b'
+            del o.green_tristars
+        self.assertEqual(3, len(capture))
+        w = capture[0]
+        self.assertEqual(DeprecationWarning, w.category)
+
+    def test_warnings_emitted_property_custom_message(self):
+        with warnings.catch_warnings(record=True) as capture:
+            warnings.simplefilter("always")
+            o = ThingB()
+            self.assertEqual('green-blue', o.green_blue_tristars)
+        self.assertEqual(1, len(capture))
+        w = capture[0]
+        self.assertIn('stop using me', str(w.message))
+        self.assertEqual(DeprecationWarning, w.category)
 
     def test_warnings_emitted_function_args(self):
         with warnings.catch_warnings(record=True) as capture:
