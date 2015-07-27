@@ -112,18 +112,14 @@ def removed_kwarg(old_name, message=None,
         prefix, postfix=None, message=message, version=version,
         removal_version=removal_version)
 
-    def decorator(f):
+    @wrapt.decorator
+    def wrapper(f, instance, args, kwargs):
+        if old_name in kwargs:
+            _utils.deprecation(out_message,
+                               stacklevel=stacklevel, category=category)
+        return f(*args, **kwargs)
 
-        @six.wraps(f)
-        def wrapper(*args, **kwargs):
-            if old_name in kwargs:
-                _utils.deprecation(out_message,
-                                   stacklevel=stacklevel, category=category)
-            return f(*args, **kwargs)
-
-        return wrapper
-
-    return decorator
+    return wrapper
 
 
 def removed_module(module, replacement=None, message=None,
