@@ -12,6 +12,11 @@ are defined below.
     to a **minimum** as they may be altered, refactored or moved to other
     locations **without** notice (and without the typical deprecation cycle).
 
+Helpers
+-------
+
+.. automodule:: debtcollector
+
 Moves
 -----
 
