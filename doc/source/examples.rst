@@ -2,8 +2,8 @@
 Examples
 ========
 
-Removing a class/method/function
---------------------------------
+Removing a class/classmethod/method/function
+--------------------------------------------
 
 To signal to a user that a method (staticmethod, classmethod, or regular
 instance method) or a class or function is going to be removed at some point
@@ -49,6 +49,27 @@ A basic example to do just this (on a class):
 .. testoutput::
 
     __main__:1: DeprecationWarning: Using class 'Pinto' is deprecated
+
+A basic example to do just this (on a classmethod):
+
+.. doctest::
+
+    >>> from debtcollector import removals
+    >>> import warnings
+    >>> warnings.simplefilter("once")
+    >>> class OldAndBusted(object):
+    ...     @removals.remove
+    ...     @classmethod
+    ...     def fix_things(cls):
+    ...         pass
+    ...
+    >>> OldAndBusted.fix_things()
+
+**Expected output:**
+
+.. testoutput::
+
+    __main__:1: DeprecationWarning: Using function/method 'OldAndBusted.fix_things()' is deprecated
 
 Moving a method
 ---------------
