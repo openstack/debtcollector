@@ -313,3 +313,24 @@ A basic example to do just this:
 .. testoutput::
 
     __main__:1: DeprecationWarning: Using the 'snizzle' argument is deprecated, please use the 'nizzle' argument instead: Pretty please stop using it
+
+Deprecating anything else
+-------------------------
+
+For use-cases which do not fit the above decorators, properties other
+provided functionality the final option is to use debtcollectors
+the :py:func:`~debtcollector.deprecate` function to make your own
+messages (using the message building logic that debtcollector uses itself).
+
+A basic example to do just this:
+
+.. doctest::
+
+    >>> import warnings
+    >>> warnings.simplefilter("always")
+    >>> import debtcollector
+    >>> debtcollector.deprecate("This is no longer supported", version="1.0")
+
+.. testoutput::
+
+    __main__:1: DeprecationWarning: This is no longer supported in version '1.0'
