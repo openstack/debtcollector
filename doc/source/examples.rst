@@ -95,6 +95,24 @@ A basic example to do just this (on a classmethod):
 
     __main__:1: DeprecationWarning: Using the 'resp' argument is deprecated: Please use 'response' instead
 
+A basic example to do just this (on a ``__init__`` method):
+
+.. doctest::
+
+    >>> import warnings
+    >>> warnings.simplefilter("once")
+    >>> from debtcollector import removals
+    >>> class OldAndBusted(object):
+    ...     @removals.removed_kwarg('bleep')
+    ...     def __init__(self, bleep=None):
+    ...         self.bloop = bleep
+    ...
+    >>> o = OldAndBusted(bleep=2)
+
+.. testoutput::
+
+    __main__:1: DeprecationWarning: Using the 'bleep' argument is deprecated
+
 Moving a method
 ---------------
 
