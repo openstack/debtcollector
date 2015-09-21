@@ -4,4 +4,4 @@ source = debtcollector
 omit = debtcollector/tests/*,debtcollector/openstack/*
 
 [report]
-ignore-errors = True
+ignore_errors = True
