@@ -12,7 +12,7 @@ collect your technical debt in a non-destructive manner.
     project.
 
 Contents
---------
+========
 
 .. toctree::
    :maxdepth: 2
@@ -21,6 +21,14 @@ Contents
    api
    examples
    contributing
+
+Release Notes
+=============
+
+.. toctree::
+   :maxdepth: 1
+
+   history
 
 Indices and tables
 ==================
