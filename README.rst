@@ -10,7 +10,15 @@ Debtcollector
     :alt: Downloads
 
 A collection of Python deprecation patterns and strategies that help you
-collect your technical debt in a non-destructive manner.
+collect your technical debt in a non-destructive manner. The goal of this
+library would be to provide well documented developer facing deprecation
+patterns that start of with the a basic set and can expand into a larger
+set of patterns as time goes on. The desired output of these patterns would
+be an application of the warnings module that would use the common functions
+that module provides to emit DeprecationWarning or PendingDeprecationWarning
+or similar derivative to developers using libraries (or potentially
+applications) about future deprecations.
+
 
 * Free software: Apache license
 * Documentation: http://docs.openstack.org/developer/debtcollector
