@@ -113,6 +113,32 @@ A basic example to do just this (on a ``__init__`` method):
 
     __main__:1: DeprecationWarning: Using the 'bleep' argument is deprecated
 
+Moving a function
+-----------------
+
+To change the name or location of a regular function use the
+:py:func:`~debtcollector.moves.moved_function` function:
+
+.. doctest::
+
+    >>> from debtcollector import moves
+    >>> import warnings
+    >>> warnings.simplefilter('always')
+    >>> def new_thing():
+    ...   return "new thing"
+    ...
+    >>> old_thing = moves.moved_function(new_thing, 'old_thing', __name__)
+    >>> new_thing()
+    'new thing'
+    >>> old_thing()
+    'new thing'
+
+**Expected output:**
+
+.. testoutput::
+
+    __main__:1: DeprecationWarning: Function '__main__.old_thing()' has moved to '__main__.new_thing()'
+
 Moving a method
 ---------------
 
