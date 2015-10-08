@@ -31,3 +31,8 @@ Removals
 --------
 
 .. automodule:: debtcollector.removals
+
+Fixtures
+--------
+
+.. automodule:: debtcollector.fixtures.disable
