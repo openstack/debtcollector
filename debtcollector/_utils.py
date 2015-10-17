@@ -30,6 +30,7 @@ except AttributeError:
 # and see https://docs.python.org/2/reference/executionmodel.html (and likely
 # others)...
 _BUILTIN_MODULES = ('builtins', '__builtin__', '__builtins__', 'exceptions')
+_enabled = True
 
 
 def deprecation(message, stacklevel=None, category=None):
@@ -49,6 +50,8 @@ def deprecation(message, stacklevel=None, category=None):
     avoid doing by always giving at *least* N + 1 release for users to address
     the deprecation warnings).
     """
+    if not _enabled:
+        return
     if category is None:
         category = DeprecationWarning
     if stacklevel is None:
