@@ -71,6 +71,42 @@ A basic example to do just this (on a classmethod):
 
     __main__:1: DeprecationWarning: Using function/method 'OldAndBusted.fix_things()' is deprecated
 
+Removing a instance property
+----------------------------
+
+Use the :py:func:`~debtcollector.removals.removed_property` decorator
+to signal that an attribute of a class is deprecated.
+
+A basic example to do just this:
+
+.. doctest::
+
+    >>> import warnings
+    >>> warnings.simplefilter("once")
+    >>> from debtcollector import removals
+    >>> class OldAndBusted(object):
+    ...   @removals.removed_property
+    ...   def thing(self):
+    ...     return 'old-and-busted'
+    ...   @thing.setter
+    ...   def thing(self, value):
+    ...     pass
+    ...   @thing.deleter
+    ...   def thing(self):
+    ...     pass
+    ...
+    >>> o = OldAndBusted()
+    >>> o.thing
+    'old-and-busted'
+    >>> o.thing = '2'
+    >>> del o.thing
+
+.. testoutput::
+
+    __main__:1: DeprecationWarning: Reading the 'thing' property is deprecated
+    __main__:1: DeprecationWarning: Setting the 'thing' property is deprecated
+    __main__:1: DeprecationWarning: Deleting the 'thing' property is deprecated
+
 Removing a keyword argument
 ---------------------------
 
