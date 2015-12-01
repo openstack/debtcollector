@@ -164,6 +164,11 @@ def remove(f=None, message=None, version=None, removal_version=None,
            stacklevel=3, category=None):
     """Decorates a function, method, or class to emit a deprecation warning
 
+    Due to limitations of the wrapt library (and python) itself, if this
+    is applied to subclasses of metaclasses then it likely will not work
+    as expected. More information can be found at bug #1520397 to see if
+    this situation affects your usage of this *universal* decorator.
+
     :param str message: A message to include in the deprecation warning
     :param str version: Specify what version the removed function is present in
     :param str removal_version: What version the function will be removed. If
