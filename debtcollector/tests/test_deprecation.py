@@ -67,6 +67,17 @@ class KittyKat(object):
         return 'supermeow'
 
 
+class Giraffe(object):
+    color = 'orange'
+    colour = moves.moved_read_only_property('colour', 'color')
+
+    @property
+    def height(self):
+        return 2
+
+    heightt = moves.moved_read_only_property('heightt', 'height')
+
+
 class NewHotness(object):
     def hot(self):
         return 'cold'
@@ -215,6 +226,14 @@ class MovedPropertyTest(test_base.TestCase):
         dog = WoofWoof()
         self.assertEqual('woof', dog.burk)
         self.assertEqual('woof', dog.bark)
+
+    def test_readonly_move(self):
+        with warnings.catch_warnings(record=True) as capture:
+            warnings.simplefilter("always")
+            self.assertEqual('orange', Giraffe.colour)
+            g = Giraffe()
+            self.assertEqual(2, g.heightt)
+        self.assertEqual(2, len(capture))
 
     def test_warnings_emitted(self):
         dog = WoofWoof()
