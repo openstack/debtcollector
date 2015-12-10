@@ -51,3 +51,7 @@ ChangeLog
 *~
 .*.swp
 .*sw?
+
+# IPython Files
+.ipynb_checkpoints/
+*.ipynb
