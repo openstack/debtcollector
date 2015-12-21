@@ -36,7 +36,7 @@ def _moved_decorator(kind, new_attribute_name, message=None,
         if attr_postfix:
             old_attribute_name += attr_postfix
 
-        @six.wraps(f)
+        @six.wraps(f, assigned=_utils.get_assigned(f))
         def wrapper(self, *args, **kwargs):
             base_name = _utils.get_class_name(self, fully_qualified=False)
             if fully_qualified:
@@ -75,7 +75,7 @@ def moved_function(new_func, old_func_name, old_module_name,
                                           message=message, version=version,
                                           removal_version=removal_version)
 
-    @six.wraps(new_func)
+    @six.wraps(new_func, assigned=_utils.get_assigned(new_func))
     def old_new_func(*args, **kwargs):
         _utils.deprecation(out_message, stacklevel=stacklevel,
                            category=category)
@@ -182,7 +182,7 @@ def moved_class(new_class, old_class_name, old_module_name,
 
     def decorator(f):
 
-        @six.wraps(f, assigned=("__name__", "__doc__"))
+        @six.wraps(f, assigned=_utils.get_assigned(f))
         def wrapper(self, *args, **kwargs):
             _utils.deprecation(out_message, stacklevel=stacklevel,
                                category=category)

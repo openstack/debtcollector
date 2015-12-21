@@ -14,6 +14,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import functools
 import inspect
 import types
 import warnings
@@ -86,6 +87,18 @@ def generate_message(prefix, postfix=None, message=None,
     if message:
         message_components.append(": %s" % message)
     return ''.join(message_components)
+
+
+def get_assigned(decorator):
+    """Helper to fix/workaround https://bugs.python.org/issue3445"""
+    if six.PY3:
+        return functools.WRAPPER_ASSIGNMENTS
+    else:
+        assigned = []
+        for attr_name in functools.WRAPPER_ASSIGNMENTS:
+            if hasattr(decorator, attr_name):
+                assigned.append(attr_name)
+        return tuple(assigned)
 
 
 def get_class_name(obj, fully_qualified=True):

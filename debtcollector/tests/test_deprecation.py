@@ -121,6 +121,18 @@ class EFSF_2(object):
     pass
 
 
+@removals.removed_class("StarLord")
+class StarLord(object):
+    def __init__(self):
+        self.name = "star"
+
+
+class StarLordJr(StarLord):
+    def __init__(self, name):
+        super(StarLordJr, self).__init__()
+        self.name = name
+
+
 class ThingB(object):
     @removals.remove()
     def black_tristars(self):
@@ -474,6 +486,24 @@ class RemovalTests(test_base.TestCase):
         self.assertEqual(1, len(capture))
         w = capture[0]
         self.assertEqual(PendingDeprecationWarning, w.category)
+
+    def test_pending_warnings_emitted_class_direct(self):
+        with warnings.catch_warnings(record=True) as capture:
+            warnings.simplefilter("always")
+            s = StarLord()
+        self.assertEqual(1, len(capture))
+        w = capture[0]
+        self.assertEqual(DeprecationWarning, w.category)
+        self.assertEqual("star", s.name)
+
+    def test_pending_warnings_emitted_class_inherit(self):
+        with warnings.catch_warnings(record=True) as capture:
+            warnings.simplefilter("always")
+            s = StarLordJr("star_jr")
+        self.assertEqual(1, len(capture))
+        w = capture[0]
+        self.assertEqual(DeprecationWarning, w.category)
+        self.assertEqual("star_jr", s.name)
 
     def test_warnings_emitted_instancemethod(self):
         zeon = ThingB()

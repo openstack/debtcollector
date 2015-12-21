@@ -38,7 +38,7 @@ A basic example to do just this (on a class):
     >>> from debtcollector import removals
     >>> import warnings
     >>> warnings.simplefilter('always')
-    >>> @removals.remove
+    >>> @removals.removed_class("Pinto")
     ... class Pinto(object):
     ...   pass
     ...
@@ -48,7 +48,7 @@ A basic example to do just this (on a class):
 
 .. testoutput::
 
-    __main__:1: DeprecationWarning: Using class 'Pinto' is deprecated
+    __main__:1: DeprecationWarning: Using class 'Pinto' (either directly or via inheritance) is deprecated
 
 A basic example to do just this (on a classmethod):
 
