@@ -35,7 +35,7 @@ def renamed_kwarg(old_name, new_name, message=None,
 
     def decorator(f):
 
-        @six.wraps(f)
+        @six.wraps(f, assigned=_utils.get_assigned(f))
         def wrapper(*args, **kwargs):
             if old_name in kwargs:
                 _utils.deprecation(out_message,
