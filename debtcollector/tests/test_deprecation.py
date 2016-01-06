@@ -32,6 +32,11 @@ def blip_blop_2(blip=1, blop=1):
     return (blip, blop)
 
 
+@renames.renamed_kwarg('blip', 'blop', replace=True)
+def blip_blop_3(blop=1):
+    return blop
+
+
 class WoofWoof(object):
     @property
     def bark(self):
@@ -339,11 +344,19 @@ class RenamedKwargTest(test_base.TestCase):
         self.assertEqual((2, 1), blip_blop(blip=2))
         self.assertEqual((1, 2), blip_blop(blop=2))
         self.assertEqual((2, 2), blip_blop(blip=2, blop=2))
+        self.assertEqual(2, blip_blop_3(blip=2))
+        self.assertEqual(2, blip_blop_3(blop=2))
 
     def test_warnings_emitted(self):
         with warnings.catch_warnings(record=True) as capture:
             warnings.simplefilter("always")
             self.assertEqual((2, 1), blip_blop(blip=2))
+        self.assertEqual(1, len(capture))
+        w = capture[0]
+        self.assertEqual(DeprecationWarning, w.category)
+        with warnings.catch_warnings(record=True) as capture:
+            warnings.simplefilter("always")
+            self.assertEqual(2, blip_blop_3(blip=2))
         self.assertEqual(1, len(capture))
         w = capture[0]
         self.assertEqual(DeprecationWarning, w.category)
@@ -372,6 +385,10 @@ class RenamedKwargTest(test_base.TestCase):
         with warnings.catch_warnings(record=True) as capture:
             warnings.simplefilter("always")
             self.assertEqual((1, 2), blip_blop(blop=2))
+        self.assertEqual(0, len(capture))
+        with warnings.catch_warnings(record=True) as capture:
+            warnings.simplefilter("always")
+            self.assertEqual(2, blip_blop_3(blop=2))
         self.assertEqual(0, len(capture))
 
 
