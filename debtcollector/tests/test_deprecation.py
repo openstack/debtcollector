@@ -357,9 +357,8 @@ class MovedMethodTest(test_base.TestCase):
         self.assertEqual(0, len(capture))
 
     def test_keeps_argspec(self):
-        # FIXME(blk): This should be assertEqual!
-        self.assertNotEqual(inspect.getargspec(KittyKat.supermeow),
-                            inspect.getargspec(KittyKat.meow))
+        self.assertEqual(inspect.getargspec(KittyKat.supermeow),
+                         inspect.getargspec(KittyKat.meow))
 
 
 class RenamedKwargTest(test_base.TestCase):
@@ -417,10 +416,8 @@ class RenamedKwargTest(test_base.TestCase):
 
     def test_argspec(self):
         # The decorated function keeps its argspec.
-
-        # FIXME(bknudson): This isn't working right, should be assertEqual!
-        self.assertNotEqual(inspect.getargspec(blip_blop_unwrapped),
-                            inspect.getargspec(blip_blop))
+        self.assertEqual(inspect.getargspec(blip_blop_unwrapped),
+                         inspect.getargspec(blip_blop))
 
 
 class UpdatedArgsTest(test_base.TestCase):
@@ -441,9 +438,8 @@ class UpdatedArgsTest(test_base.TestCase):
         self.assertEqual(0, len(capture))
 
     def test_argspec_preserved(self):
-        # FIXME(bknudson): This should be assertEqual!
-        self.assertNotEqual(inspect.getargspec(blip_blop_blip_unwrapped),
-                            inspect.getargspec(blip_blop_blip))
+        self.assertEqual(inspect.getargspec(blip_blop_blip_unwrapped),
+                         inspect.getargspec(blip_blop_blip))
 
 
 class RemovalTests(test_base.TestCase):

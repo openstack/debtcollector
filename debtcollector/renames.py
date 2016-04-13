@@ -14,7 +14,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import six
+import wrapt
 
 from debtcollector import _utils
 
@@ -33,17 +33,13 @@ def renamed_kwarg(old_name, new_name, message=None,
         prefix, postfix=postfix, message=message, version=version,
         removal_version=removal_version)
 
-    def decorator(f):
-
-        @six.wraps(f, assigned=_utils.get_assigned(f))
-        def wrapper(*args, **kwargs):
-            if old_name in kwargs:
-                _utils.deprecation(out_message,
-                                   stacklevel=stacklevel, category=category)
-                if replace:
-                    kwargs.setdefault(new_name, kwargs.pop(old_name))
-            return f(*args, **kwargs)
-
-        return wrapper
+    @wrapt.decorator
+    def decorator(wrapped, instance, args, kwargs):
+        if old_name in kwargs:
+            _utils.deprecation(out_message,
+                               stacklevel=stacklevel, category=category)
+            if replace:
+                kwargs.setdefault(new_name, kwargs.pop(old_name))
+        return wrapped(*args, **kwargs)
 
     return decorator
