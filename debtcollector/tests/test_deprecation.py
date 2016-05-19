@@ -12,6 +12,7 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+import inspect
 import warnings
 
 import debtcollector
@@ -28,6 +29,10 @@ def blip_blop(blip=1, blop=1):
     return (blip, blop)
 
 
+def blip_blop_unwrapped(blip=1, blop=1):
+    return (blip, blop)
+
+
 @renames.renamed_kwarg('blip', 'blop', category=PendingDeprecationWarning)
 def blip_blop_2(blip=1, blop=1):
     return (blip, blop)
@@ -40,6 +45,10 @@ def blip_blop_3(blop=1):
 
 @updating.updated_kwarg_default_value('type', 'cat', 'feline')
 def blip_blop_blip(type='cat'):
+    return "The %s meowed quietly" % type
+
+
+def blip_blop_blip_unwrapped(type='cat'):
     return "The %s meowed quietly" % type
 
 
@@ -67,14 +76,14 @@ class WoofWoof(object):
 class KittyKat(object):
 
     @moves.moved_method('supermeow')
-    def meow(self):
-        return self.supermeow()
+    def meow(self, volume=11):
+        return self.supermeow(volume)
 
     @moves.moved_method('supermeow', category=PendingDeprecationWarning)
-    def maow(self):
-        return self.supermeow()
+    def maow(self, volume=11):
+        return self.supermeow(volume)
 
-    def supermeow(self):
+    def supermeow(self, volume=11):
         return 'supermeow'
 
 
@@ -96,6 +105,10 @@ class NewHotness(object):
 
 @removals.remove()
 def crimson_lightning(fake_input=None):
+    return fake_input
+
+
+def crimson_lightning_unwrapped(fake_input=None):
     return fake_input
 
 
@@ -343,6 +356,11 @@ class MovedMethodTest(test_base.TestCase):
             self.assertEqual('supermeow', c.supermeow())
         self.assertEqual(0, len(capture))
 
+    def test_keeps_argspec(self):
+        # FIXME(blk): This should be assertEqual!
+        self.assertNotEqual(inspect.getargspec(KittyKat.supermeow),
+                            inspect.getargspec(KittyKat.meow))
+
 
 class RenamedKwargTest(test_base.TestCase):
     def test_basics(self):
@@ -397,6 +415,13 @@ class RenamedKwargTest(test_base.TestCase):
             self.assertEqual(2, blip_blop_3(blop=2))
         self.assertEqual(0, len(capture))
 
+    def test_argspec(self):
+        # The decorated function keeps its argspec.
+
+        # FIXME(bknudson): This isn't working right, should be assertEqual!
+        self.assertNotEqual(inspect.getargspec(blip_blop_unwrapped),
+                            inspect.getargspec(blip_blop))
+
 
 class UpdatedArgsTest(test_base.TestCase):
     def test_basic(self):
@@ -415,6 +440,11 @@ class UpdatedArgsTest(test_base.TestCase):
                 blip_blop_blip(type='kitten'))
         self.assertEqual(0, len(capture))
 
+    def test_argspec_preserved(self):
+        # FIXME(bknudson): This should be assertEqual!
+        self.assertNotEqual(inspect.getargspec(blip_blop_blip_unwrapped),
+                            inspect.getargspec(blip_blop_blip))
+
 
 class RemovalTests(test_base.TestCase):
     def test_function_args(self):
@@ -422,6 +452,12 @@ class RemovalTests(test_base.TestCase):
 
     def test_function_noargs(self):
         self.assertTrue(red_comet())
+
+    def test_function_keeps_argspec(self):
+        # The decorated function keeps its argspec.
+        self.assertEqual(
+            inspect.getargspec(crimson_lightning_unwrapped),
+            inspect.getargspec(crimson_lightning))
 
     def test_deprecated_kwarg(self):
 
@@ -440,6 +476,17 @@ class RemovalTests(test_base.TestCase):
             warnings.simplefilter("always")
             self.assertEqual(2, f())
         self.assertEqual(0, len(capture))
+
+    def test_removed_kwarg_keeps_argspec(self):
+        @removals.removed_kwarg('b')
+        def f(b=2):
+            return b
+
+        def f_unwrapped(b=2):
+            return b
+
+        self.assertEqual(inspect.getargspec(f_unwrapped),
+                         inspect.getargspec(f))
 
     def test_pending_deprecated_kwarg(self):
 
