@@ -15,6 +15,7 @@
 #    under the License.
 
 import six
+import wrapt
 if six.PY3:
     import inspect
     Parameter = inspect.Parameter
@@ -50,8 +51,8 @@ def updated_kwarg_default_value(name, old_value, new_value, message=None,
         sig = get_signature(f)
         varnames = list(six.iterkeys(sig.parameters))
 
-        @six.wraps(f)
-        def wrapper(*args, **kwargs):
+        @wrapt.decorator
+        def wrapper(wrapped, instance, args, kwargs):
             explicit_params = set(
                 varnames[:len(args)] + list(kwargs.keys())
             )
@@ -60,8 +61,8 @@ def updated_kwarg_default_value(name, old_value, new_value, message=None,
             if name in default_params:
                 _utils.deprecation(out_message,
                                    stacklevel=stacklevel, category=category)
-            return f(*args, **kwargs)
+            return wrapped(*args, **kwargs)
 
-        return wrapper
+        return wrapper(f)
 
     return decorator

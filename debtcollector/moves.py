@@ -17,6 +17,7 @@
 import inspect
 
 import six
+import wrapt
 
 from debtcollector import _utils
 
@@ -36,9 +37,9 @@ def _moved_decorator(kind, new_attribute_name, message=None,
         if attr_postfix:
             old_attribute_name += attr_postfix
 
-        @six.wraps(f, assigned=_utils.get_assigned(f))
-        def wrapper(self, *args, **kwargs):
-            base_name = _utils.get_class_name(self, fully_qualified=False)
+        @wrapt.decorator
+        def wrapper(wrapped, instance, args, kwargs):
+            base_name = _utils.get_class_name(wrapped, fully_qualified=False)
             if fully_qualified:
                 old_name = old_attribute_name
             else:
@@ -50,9 +51,9 @@ def _moved_decorator(kind, new_attribute_name, message=None,
                 version=version, removal_version=removal_version)
             _utils.deprecation(out_message, stacklevel=stacklevel,
                                category=category)
-            return f(self, *args, **kwargs)
+            return wrapped(*args, **kwargs)
 
-        return wrapper
+        return wrapper(f)
 
     return decorator
 
