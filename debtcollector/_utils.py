@@ -38,7 +38,7 @@ def deprecation(message, stacklevel=None, category=None):
     """Warns about some type of deprecation that has been (or will be) made.
 
     This helper function makes it easier to interact with the warnings module
-    by standardizing the arguments that the warning function recieves so that
+    by standardizing the arguments that the warning function receives so that
     it is easier to use.
 
     This should be used to emit warnings to users (users can easily turn these
