@@ -55,3 +55,6 @@ ChangeLog
 # IPython Files
 .ipynb_checkpoints/
 *.ipynb
+
+# reno build
+releasenotes/build
