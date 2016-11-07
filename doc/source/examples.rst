@@ -355,7 +355,7 @@ Further customizing the emitted messages
 ----------------------------------------
 
 It is typically useful to tell the user when a deprecation has started and
-when the deprecated item will be offically removed (deleted or other). To
+when the deprecated item will be officially removed (deleted or other). To
 enable this all the currently provided functions this library provides
 take a ``message``, ``version`` and ``removal_version`` keyword arguments.
 These are used in forming the message that is shown to the user when they
