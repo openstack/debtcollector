@@ -1,6 +1,6 @@
-===
-API
-===
+=============
+API Reference
+=============
 
 
 The currently documented publicly exposed API's for usage in your project

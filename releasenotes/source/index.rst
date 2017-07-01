@@ -2,8 +2,8 @@
  debtcollector Release Notes
 =============================
 
- .. toctree::
-    :maxdepth: 1
+.. toctree::
+   :maxdepth: 1
 
-    unreleased
-    ocata
+   unreleased
+   ocata

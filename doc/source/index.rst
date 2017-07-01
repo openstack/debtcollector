@@ -1,3 +1,4 @@
+=========================================
 Welcome to debtcollector's documentation!
 =========================================
 
@@ -11,27 +12,15 @@ collect your technical debt in a non-destructive manner.
     integration is it aims to be generally usable and useful in any
     project.
 
-Contents
-========
-
 .. toctree::
    :maxdepth: 2
 
-   installation
-   api
-   examples
-   contributing
+   install/index
+   user/index
+   reference/index
+   contributor/index
 
-Release Notes
-=============
-
-.. toctree::
-   :maxdepth: 1
-
-   history
-
-Indices and tables
-==================
+.. rubric:: Indices and tables
 
 * :ref:`genindex`
 * :ref:`modindex`
