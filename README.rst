@@ -29,6 +29,6 @@ applications) about future deprecations.
 
 
 * Free software: Apache license
-* Documentation: http://docs.openstack.org/developer/debtcollector
-* Source: http://git.openstack.org/cgit/openstack/debtcollector
-* Bugs: http://bugs.launchpad.net/debtcollector
+* Documentation: https://docs.openstack.org/debtcollector/latest
+* Source: https://git.openstack.org/cgit/openstack/debtcollector
+* Bugs: https://bugs.launchpad.net/debtcollector
