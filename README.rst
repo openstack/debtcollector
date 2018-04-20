@@ -11,11 +11,11 @@ Debtcollector
 =============
 
 .. image:: https://img.shields.io/pypi/v/debtcollector.svg
-    :target: https://pypi.python.org/pypi/debtcollector/
+    :target: https://pypi.org/project/debtcollector/
     :alt: Latest Version
 
 .. image:: https://img.shields.io/pypi/dm/debtcollector.svg
-    :target: https://pypi.python.org/pypi/debtcollector/
+    :target: https://pypi.org/project/debtcollector/
     :alt: Downloads
 
 A collection of Python deprecation patterns and strategies that help you
