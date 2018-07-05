@@ -32,3 +32,4 @@ applications) about future deprecations.
 * Documentation: https://docs.openstack.org/debtcollector/latest
 * Source: https://git.openstack.org/cgit/openstack/debtcollector
 * Bugs: https://bugs.launchpad.net/debtcollector
+* Release Notes: https://docs.openstack.org/releasenotes/debtcollector
