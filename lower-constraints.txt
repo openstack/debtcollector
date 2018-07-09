@@ -8,6 +8,7 @@ dulwich==0.15.0
 extras==1.0.0
 fixtures==3.0.0
 flake8==2.2.4
+funcsigs==1.0.0
 hacking==0.10.3
 imagesize==0.7.1
 Jinja2==2.10
@@ -31,7 +32,7 @@ snowballstemmer==1.2.1
 Sphinx==1.6.5
 sphinxcontrib-websupport==1.0.1
 stevedore==1.20.0
-testrepository==0.0.18
+stestr==2.0.0
 testtools==2.2.0
 traceback2==1.4.0
 unittest2==1.1.0
