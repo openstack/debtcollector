@@ -8,7 +8,6 @@ dulwich==0.15.0
 extras==1.0.0
 fixtures==3.0.0
 flake8==2.2.4
-funcsigs==1.0.0
 hacking==0.10.3
 imagesize==0.7.1
 Jinja2==2.10
