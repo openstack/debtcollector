@@ -29,9 +29,10 @@ extensions = [
 ]
 
 # openstackdocstheme options
-repository_name = 'openstack/debtcollector'
-bug_project = 'debtcollector'
-bug_tag = 'doc'
+openstackdocs_repo_name = 'openstack/debtcollector'
+openstackdocs_auto_name = False
+openstackdocs_bug_project = 'debtcollector'
+openstackdocs_bug_tag = 'doc'
 
 # autodoc generation is a bit aggressive and a nuisance when doing heavy
 # text edit cycles.
@@ -55,7 +56,7 @@ add_function_parentheses = True
 add_module_names = True
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = 'native'
 
 # -- Options for HTML output --------------------------------------------------
 
@@ -66,7 +67,6 @@ pygments_style = 'sphinx'
 html_theme = 'openstackdocs'
 # html_static_path = ['static']
 
-html_last_updated_fmt = '%Y-%m-%d %H:%M'
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = '%sdoc' % project
