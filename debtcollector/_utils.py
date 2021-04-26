@@ -14,19 +14,10 @@
 
 import functools
 import inspect
-import types
 import warnings
 
-try:
-    _TYPE_TYPE = types.TypeType
-except AttributeError:
-    _TYPE_TYPE = type
-
-
-# See: https://docs.python.org/2/library/__builtin__.html#module-__builtin__
-# and see https://docs.python.org/2/reference/executionmodel.html (and likely
-# others)...
-_BUILTIN_MODULES = ('builtins', '__builtin__', '__builtins__', 'exceptions')
+# See https://docs.python.org/3/library/builtins.html
+_BUILTIN_MODULES = ('builtins', 'exceptions')
 _enabled = True
 
 
@@ -154,7 +145,7 @@ def get_callable_name(function):
                 parts = (function.__module__, function.__name__)
     else:
         im_class = type(function)
-        if im_class is _TYPE_TYPE:
+        if im_class is type:
             im_class = function
         try:
             parts = (im_class.__module__, im_class.__qualname__)
