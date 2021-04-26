@@ -12,12 +12,16 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-import pbr.version
+try:
+    # For Python 3.8 and later
+    import importlib.metadata as importlib_metadata
+except ImportError:
+    # For everyone else
+    import importlib_metadata
 
 from debtcollector import _utils
 
-__version__ = pbr.version.VersionInfo(
-    'debtcollector').version_string()
+__version__ = importlib_metadata.version('debtcollector')
 
 
 def deprecate(prefix, postfix=None, message=None,
