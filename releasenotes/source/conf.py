@@ -58,8 +58,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'debtcollector Release Notes'
-copyright = u'2016, debtcollector Developers'
+project = 'debtcollector Release Notes'
+copyright = '2016, debtcollector Developers'
 
 # Release notes do not need a version number in the title, they
 # cover multiple releases.
@@ -206,8 +206,8 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     ('index', 'debtcollectorReleaseNotes.tex',
-     u'debtcollector Release Notes Documentation',
-     u'debtcollector Developers', 'manual'),
+     'debtcollector Release Notes Documentation',
+     'debtcollector Developers', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -237,8 +237,8 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'debtcollectorReleaseNotes',
-     u'debtcollector Release Notes Documentation',
-     [u'debtcollector Developers'], 1)
+     'debtcollector Release Notes Documentation',
+     ['debtcollector Developers'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -252,8 +252,8 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     ('index', 'debtcollectorReleaseNotes',
-     u'debtcollector Release Notes Documentation',
-     u'debtcollector Developers', 'debtcollectorReleaseNotes',
+     'debtcollector Release Notes Documentation',
+     'debtcollector Developers', 'debtcollectorReleaseNotes',
      'One line description of project.',
      'Miscellaneous'),
 ]
