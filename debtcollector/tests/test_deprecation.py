@@ -357,8 +357,8 @@ class MovedMethodTest(test_base.TestCase):
         self.assertEqual(0, len(capture))
 
     def test_keeps_argspec(self):
-        self.assertEqual(inspect.getargspec(KittyKat.supermeow),
-                         inspect.getargspec(KittyKat.meow))
+        self.assertEqual(inspect.getfullargspec(KittyKat.supermeow),
+                         inspect.getfullargspec(KittyKat.meow))
 
 
 class RenamedKwargTest(test_base.TestCase):
@@ -416,8 +416,8 @@ class RenamedKwargTest(test_base.TestCase):
 
     def test_argspec(self):
         # The decorated function keeps its argspec.
-        self.assertEqual(inspect.getargspec(blip_blop_unwrapped),
-                         inspect.getargspec(blip_blop))
+        self.assertEqual(inspect.getfullargspec(blip_blop_unwrapped),
+                         inspect.getfullargspec(blip_blop))
 
 
 class UpdatedArgsTest(test_base.TestCase):
@@ -438,8 +438,8 @@ class UpdatedArgsTest(test_base.TestCase):
         self.assertEqual(0, len(capture))
 
     def test_argspec_preserved(self):
-        self.assertEqual(inspect.getargspec(blip_blop_blip_unwrapped),
-                         inspect.getargspec(blip_blop_blip))
+        self.assertEqual(inspect.getfullargspec(blip_blop_blip_unwrapped),
+                         inspect.getfullargspec(blip_blop_blip))
 
 
 class RemovalTests(test_base.TestCase):
@@ -452,8 +452,8 @@ class RemovalTests(test_base.TestCase):
     def test_function_keeps_argspec(self):
         # The decorated function keeps its argspec.
         self.assertEqual(
-            inspect.getargspec(crimson_lightning_unwrapped),
-            inspect.getargspec(crimson_lightning))
+            inspect.getfullargspec(crimson_lightning_unwrapped),
+            inspect.getfullargspec(crimson_lightning))
 
     def test_deprecated_kwarg(self):
 
@@ -481,8 +481,8 @@ class RemovalTests(test_base.TestCase):
         def f_unwrapped(b=2):
             return b
 
-        self.assertEqual(inspect.getargspec(f_unwrapped),
-                         inspect.getargspec(f))
+        self.assertEqual(inspect.getfullargspec(f_unwrapped),
+                         inspect.getfullargspec(f))
 
     def test_pending_deprecated_kwarg(self):
 
