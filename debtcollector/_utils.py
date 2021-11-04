@@ -19,8 +19,6 @@ import inspect
 import types
 import warnings
 
-import six
-
 try:
     _TYPE_TYPE = types.TypeType
 except AttributeError:
@@ -91,14 +89,7 @@ def generate_message(prefix, postfix=None, message=None,
 
 def get_assigned(decorator):
     """Helper to fix/workaround https://bugs.python.org/issue3445"""
-    if six.PY3:
-        return functools.WRAPPER_ASSIGNMENTS
-    else:
-        assigned = []
-        for attr_name in functools.WRAPPER_ASSIGNMENTS:
-            if hasattr(decorator, attr_name):
-                assigned.append(attr_name)
-        return tuple(assigned)
+    return functools.WRAPPER_ASSIGNMENTS
 
 
 def get_class_name(obj, fully_qualified=True):
@@ -108,7 +99,7 @@ def get_class_name(obj, fully_qualified=True):
     Else, fully qualified name of the type of the object is returned.
     For builtin types, just name is returned.
     """
-    if not isinstance(obj, six.class_types):
+    if not isinstance(obj, type):
         obj = type(obj)
     try:
         built_in = obj.__module__ in _BUILTIN_MODULES
@@ -129,7 +120,7 @@ def get_method_self(method):
     if not inspect.ismethod(method):
         return None
     try:
-        return six.get_method_self(method)
+        return getattr(method, '__self__')
     except AttributeError:
         return None
 
@@ -142,7 +133,7 @@ def get_callable_name(function):
     method_self = get_method_self(function)
     if method_self is not None:
         # This is a bound method.
-        if isinstance(method_self, six.class_types):
+        if isinstance(method_self, type):
             # This is a bound class method.
             im_class = method_self
         else:
