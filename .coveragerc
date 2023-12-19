@@ -1,7 +1,7 @@
 [run]
 branch = True
 source = debtcollector
-omit = debtcollector/tests/*,debtcollector/openstack/*
+omit = debtcollector/tests/*
 
 [report]
 ignore_errors = True
