@@ -12,8 +12,14 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import annotations
+
+import builtins
+from collections.abc import Callable
 import functools
 import inspect
+import types
+from typing import Any
 import warnings
 
 # See https://docs.python.org/3/library/builtins.html
@@ -21,7 +27,11 @@ _BUILTIN_MODULES = ('builtins', 'exceptions')
 _enabled = True
 
 
-def deprecation(message, stacklevel=None, category=None):
+def deprecation(
+    message: str,
+    stacklevel: int | None = None,
+    category: type[Warning] | None = None,
+) -> None:
     """Warns about some type of deprecation that has been (or will be) made.
 
     This helper function makes it easier to interact with the warnings module
@@ -39,7 +49,7 @@ def deprecation(message, stacklevel=None, category=None):
     the deprecation warnings).
     """
     if not _enabled:
-        return
+        return None
     if category is None:
         category = DeprecationWarning
     if stacklevel is None:
@@ -47,8 +57,12 @@ def deprecation(message, stacklevel=None, category=None):
     else:
         warnings.warn(message, category=category, stacklevel=stacklevel)
 
+    return None
 
-def get_qualified_name(obj):
+
+def get_qualified_name(
+    obj: Callable[..., Any] | types.ModuleType | builtins.function,
+) -> tuple[bool, str]:
     # Prefer the py3.x name (if we can get at it...)
     try:
         return (True, obj.__qualname__)
@@ -57,8 +71,12 @@ def get_qualified_name(obj):
 
 
 def generate_message(
-    prefix, postfix=None, message=None, version=None, removal_version=None
-):
+    prefix: str,
+    postfix: str | None = None,
+    message: str | None = None,
+    version: str | None = None,
+    removal_version: str | None = None,
+) -> str:
     """Helper to generate a common message 'style' for deprecation helpers."""
     message_components = [prefix]
     if version:
@@ -79,12 +97,15 @@ def generate_message(
     return ''.join(message_components)
 
 
-def get_assigned(decorator):
+def get_assigned(decorator: Any) -> tuple[str, ...]:
     """Helper to fix/workaround https://bugs.python.org/issue3445"""
     return functools.WRAPPER_ASSIGNMENTS
 
 
-def get_class_name(obj, fully_qualified=True):
+def get_class_name(
+    obj: type[Any] | Callable[..., Any],
+    fully_qualified: bool = True,
+) -> str:
     """Get class name for object.
 
     If object is a type, fully qualified name of the type is returned.
@@ -107,7 +128,7 @@ def get_class_name(obj, fully_qualified=True):
         return obj.__name__
 
 
-def get_method_self(method):
+def get_method_self(method: Any) -> Any:
     """Gets the ``self`` object attached to this method (or none)."""
     if not inspect.ismethod(method):
         return None
@@ -117,11 +138,12 @@ def get_method_self(method):
         return None
 
 
-def get_callable_name(function):
+def get_callable_name(function: Callable[..., Any]) -> str:
     """Generate a name from callable.
 
     Tries to do the best to guess fully qualified callable name.
     """
+    parts: tuple[str, str] | tuple[str, str, str]
     method_self = get_method_self(function)
     if method_self is not None:
         # This is a bound method.
@@ -150,9 +172,10 @@ def get_callable_name(function):
             else:
                 parts = (function.__module__, function.__name__)
     else:
-        im_class = type(function)
-        if im_class is type:
+        if type(function) is type:
             im_class = function
+        else:
+            im_class = type(function)
         try:
             parts = (im_class.__module__, im_class.__qualname__)
         except AttributeError:

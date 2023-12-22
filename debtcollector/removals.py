@@ -12,19 +12,40 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import annotations
+
+import builtins
+from collections.abc import Callable
 import functools
 import inspect
+import types
+from typing import Any
+from typing import overload
+from typing import ParamSpec
+from typing import TypeVar
 
 import wrapt
 
 from debtcollector import _utils
 
+P = ParamSpec('P')
+R = TypeVar('R')
+T = TypeVar('T')
 
-def _get_qualified_name(obj):
+
+def _get_qualified_name(
+    obj: Callable[..., Any] | types.ModuleType | builtins.function,
+) -> str:
     return _utils.get_qualified_name(obj)[1]
 
 
-def _fetch_first_result(fget, fset, fdel, apply_func, value_not_found=None):
+def _fetch_first_result(
+    fget: Callable[[Any], Any] | None,
+    fset: Callable[[Any, Any], None] | None,
+    fdel: Callable[[Any], None] | None,
+    apply_func: Callable[[Callable[..., Any] | builtins.function], str],
+    value_not_found: str | None = None,
+) -> str | None:
     """Fetch first non-none/empty result of applying ``apply_func``."""
     for f in filter(None, (fget, fset, fdel)):
         result = apply_func(f)
@@ -61,17 +82,24 @@ class removed_property(property):
         'delete': "Deleting the '%s' property is deprecated",
     }
 
+    stacklevel: int
+    category: type[Warning]
+    version: str | None
+    removal_version: str | None
+    message: str | None
+    _message_cache: dict[str, str]
+
     def __init__(
         self,
-        fget=None,
-        fset=None,
-        fdel=None,
-        doc=None,
-        stacklevel=3,
-        category=DeprecationWarning,
-        version=None,
-        removal_version=None,
-        message=None,
+        fget: Callable[[Any], Any] | None = None,
+        fset: Callable[[Any, Any], None] | None = None,
+        fdel: Callable[[Any], None] | None = None,
+        doc: str | None = None,
+        stacklevel: int = 3,
+        category: type[Warning] = DeprecationWarning,
+        version: str | None = None,
+        removal_version: str | None = None,
+        message: str | None = None,
     ):
         if doc is None and inspect.isfunction(fget):
             doc = getattr(fget, '__doc__', None)
@@ -83,7 +111,7 @@ class removed_property(property):
         self.message = message
         self._message_cache = {}
 
-    def _fetch_message_from_cache(self, kind):
+    def _fetch_message_from_cache(self, kind: str) -> str:
         try:
             out_message = self._message_cache[kind]
         except KeyError:
@@ -104,7 +132,11 @@ class removed_property(property):
             self._message_cache[kind] = out_message
         return out_message
 
-    def __call__(self, fget, **kwargs):
+    def __call__(
+        self,
+        fget: Callable[[Any], Any],
+        **kwargs: Any,
+    ) -> removed_property:
         return type(self)(
             fget,
             self.fset,
@@ -117,7 +149,7 @@ class removed_property(property):
             kwargs.get('message', self.message),
         )
 
-    def __delete__(self, obj):
+    def __delete__(self, obj: Any) -> None:
         if self.fdel is None:
             raise AttributeError("can't delete attribute")
         out_message = self._fetch_message_from_cache('delete')
@@ -126,17 +158,17 @@ class removed_property(property):
         )
         self.fdel(obj)
 
-    def __set__(self, obj, value):
+    def __set__(self, instance: Any, value: Any) -> None:
         if self.fset is None:
             raise AttributeError("can't set attribute")
         out_message = self._fetch_message_from_cache('set')
         _utils.deprecation(
             out_message, stacklevel=self.stacklevel, category=self.category
         )
-        self.fset(obj, value)
+        self.fset(instance, value)
 
-    def __get__(self, obj, value):
-        if obj is None:
+    def __get__(self, instance: Any, owner: type | None = None) -> Any:
+        if instance is None:
             return self
         if self.fget is None:
             raise AttributeError("unreadable attribute")
@@ -144,9 +176,9 @@ class removed_property(property):
         _utils.deprecation(
             out_message, stacklevel=self.stacklevel, category=self.category
         )
-        return self.fget(obj)
+        return self.fget(instance)
 
-    def getter(self, fget):
+    def getter(self, fget: Callable[[Any], Any], /) -> removed_property:
         return type(self)(
             fget,
             self.fset,
@@ -159,7 +191,7 @@ class removed_property(property):
             self.message,
         )
 
-    def setter(self, fset):
+    def setter(self, fset: Callable[[Any, Any], None], /) -> removed_property:
         return type(self)(
             self.fget,
             fset,
@@ -172,7 +204,7 @@ class removed_property(property):
             self.message,
         )
 
-    def deleter(self, fdel):
+    def deleter(self, fdel: Callable[[Any], None], /) -> removed_property:
         return type(self)(
             self.fget,
             self.fset,
@@ -186,14 +218,36 @@ class removed_property(property):
         )
 
 
+@overload
 def remove(
-    f=None,
-    message=None,
-    version=None,
-    removal_version=None,
-    stacklevel=3,
-    category=None,
-):
+    f: Callable[P, R],
+    message: str | None = None,
+    version: str | None = None,
+    removal_version: str | None = None,
+    stacklevel: int = 3,
+    category: type[Warning] | None = None,
+) -> Callable[P, R]: ...
+
+
+@overload
+def remove(
+    f: None = None,
+    message: str | None = None,
+    version: str | None = None,
+    removal_version: str | None = None,
+    stacklevel: int = 3,
+    category: type[Warning] | None = None,
+) -> Callable[[Callable[P, R]], Callable[P, R]]: ...
+
+
+def remove(
+    f: Callable[P, R] | None = None,
+    message: str | None = None,
+    version: str | None = None,
+    removal_version: str | None = None,
+    stacklevel: int = 3,
+    category: type[Warning] | None = None,
+) -> Callable[P, R] | Callable[[Callable[P, R]], Callable[P, R]]:
     """Decorates a function, method, or class to emit a deprecation warning
 
     Due to limitations of the wrapt library (and python) itself, if this
@@ -223,7 +277,12 @@ def remove(
         )
 
     @wrapt.decorator
-    def wrapper(f, instance, args, kwargs):
+    def wrapper(
+        wrapped: Callable[P, R],
+        instance: Any,
+        args: tuple[Any, ...],
+        kwargs: dict[str, Any],
+    ) -> R:
         qualified, f_name = _utils.get_qualified_name(f)
         if qualified:
             if inspect.isclass(f):
@@ -240,7 +299,10 @@ def remove(
                 if inspect.isclass(f):
                     prefix_pre = "Using class"
                     thing_post = ''
-                    module_name = _get_qualified_name(inspect.getmodule(f))
+                    module = inspect.getmodule(f)
+                    if module is None:
+                        raise TypeError('Could not retrieve module for {f}')
+                    module_name = _get_qualified_name(module)
                     if module_name == '__main__':
                         f_name = _utils.get_class_name(
                             f, fully_qualified=False
@@ -250,7 +312,10 @@ def remove(
                 # Decorator was a used on a function
                 else:
                     thing_post = '()'
-                    module_name = _get_qualified_name(inspect.getmodule(f))
+                    module = inspect.getmodule(f)
+                    if module is None:
+                        raise TypeError('Could not retrieve module for {f}')
+                    module_name = _get_qualified_name(module)
                     if module_name != '__main__':
                         f_name = _utils.get_callable_name(f)
             # Decorator was used on a classmethod or instancemethod
@@ -277,21 +342,20 @@ def remove(
         _utils.deprecation(
             out_message, stacklevel=stacklevel, category=category
         )
-        return f(*args, **kwargs)
+        return wrapped(*args, **kwargs)
 
     return wrapper(f)
 
 
 def removed_kwarg(
-    old_name,
-    message=None,
-    version=None,
-    removal_version=None,
-    stacklevel=3,
-    category=None,
-):
+    old_name: str,
+    message: str | None = None,
+    version: str | None = None,
+    removal_version: str | None = None,
+    stacklevel: int = 3,
+    category: type[Warning] | None = None,
+) -> Callable[[Callable[P, R]], Callable[P, R]]:
     """Decorates a kwarg accepting function to deprecate a removed kwarg."""
-
     prefix = f"Using the '{old_name}' argument is deprecated"
     out_message = _utils.generate_message(
         prefix,
@@ -302,30 +366,37 @@ def removed_kwarg(
     )
 
     @wrapt.decorator
-    def wrapper(f, instance, args, kwargs):
+    def wrapper(
+        wrapped: Callable[P, R],
+        instance: Any,
+        args: tuple[Any, ...],
+        kwargs: dict[str, Any],
+    ) -> R:
         if old_name in kwargs:
             _utils.deprecation(
                 out_message, stacklevel=stacklevel, category=category
             )
-        return f(*args, **kwargs)
+        return wrapped(*args, **kwargs)
 
-    return wrapper
+    # FIXME(stephenfin): Depends on [1] or similar
+    # [1] https://github.com/GrahamDumpleton/wrapt/pull/306
+    return wrapper  # type: ignore[return-value]
 
 
 def removed_class(
-    cls_name,
-    replacement=None,
-    message=None,
-    version=None,
-    removal_version=None,
-    stacklevel=3,
-    category=None,
-):
+    cls_name: str,
+    replacement: None = None,
+    message: str | None = None,
+    version: str | None = None,
+    removal_version: str | None = None,
+    stacklevel: int = 3,
+    category: type[Warning] | None = None,
+) -> Callable[[T], T]:
     """Decorates a class to denote that it will be removed at some point."""
 
-    def _wrap_it(old_init, out_message):
+    def _wrap_it(old_init: Any, out_message: str) -> Any:
         @functools.wraps(old_init, assigned=_utils.get_assigned(old_init))
-        def new_init(self, *args, **kwargs):
+        def new_init(self: Any, *args: Any, **kwargs: Any) -> Any:
             _utils.deprecation(
                 out_message, stacklevel=stacklevel, category=category
             )
@@ -333,19 +404,17 @@ def removed_class(
 
         return new_init
 
-    def _check_it(cls):
+    def _cls_decorator(cls: T) -> T:
         if not inspect.isclass(cls):
             _qual, type_name = _utils.get_qualified_name(type(cls))
             raise TypeError(
-                f"Unexpected class type '{type_name}' (expected"
-                " class type only)"
+                f"Unexpected class type '{type_name}' (expected "
+                f"class type only)"
             )
 
-    def _cls_decorator(cls):
-        _check_it(cls)
         out_message = _utils.generate_message(
-            f"Using class '{cls_name}' (either directly or via inheritance)"
-            " is deprecated",
+            f"Using class '{cls_name}' (either directly or via inheritance) "
+            f"is deprecated",
             postfix=None,
             message=message,
             version=version,
@@ -358,14 +427,14 @@ def removed_class(
 
 
 def removed_module(
-    module,
-    replacement=None,
-    message=None,
-    version=None,
-    removal_version=None,
-    stacklevel=3,
-    category=None,
-):
+    module: types.ModuleType | str,
+    replacement: str | None = None,
+    message: str | None = None,
+    version: str | None = None,
+    removal_version: str | None = None,
+    stacklevel: int = 3,
+    category: type[Warning] | None = None,
+) -> None:
     """Helper to be called inside a module to emit a deprecation warning
 
     :param str replacment: A location (or information about) of any potential
@@ -387,8 +456,8 @@ def removed_module(
     else:
         _qual, type_name = _utils.get_qualified_name(type(module))
         raise TypeError(
-            f"Unexpected module type '{type_name}' (expected string or"
-            " module type only)"
+            f"Unexpected module type '{type_name}' (expected string or "
+            f"module type only)"
         )
     prefix = f"The '{module_name}' module usage is deprecated"
     if replacement:

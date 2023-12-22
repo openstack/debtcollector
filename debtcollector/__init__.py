@@ -10,6 +10,8 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
+from __future__ import annotations
+
 import importlib.metadata
 
 from debtcollector import _utils
@@ -18,14 +20,14 @@ __version__ = importlib.metadata.version('debtcollector')
 
 
 def deprecate(
-    prefix,
-    postfix=None,
-    message=None,
-    version=None,
-    removal_version=None,
-    stacklevel=3,
-    category=DeprecationWarning,
-):
+    prefix: str,
+    postfix: str | None = None,
+    message: str | None = None,
+    version: str | None = None,
+    removal_version: str | None = None,
+    stacklevel: int = 3,
+    category: type[Warning] = DeprecationWarning,
+) -> None:
     """Helper to deprecate some thing using generated message format.
 
     :param prefix: prefix string used as the prefix of the output message

@@ -165,11 +165,11 @@ class ThingB:
     def green_tristars(self):
         return 'green'
 
-    @green_tristars.setter
+    @green_tristars.setter  # type: ignore[no-redef]
     def green_tristars(self, value):
         pass
 
-    @green_tristars.deleter
+    @green_tristars.deleter  # type: ignore[no-redef]
     def green_tristars(self):
         pass
 
@@ -244,7 +244,7 @@ class MovedInheritableClassTest(test_base.TestCase):
         self.assertEqual(PendingDeprecationWarning, w.category)
 
     def test_existing_refer_subclass(self):
-        class MyOldThing(OldHotness):
+        class MyOldThing(OldHotness):  # type: ignore[valid-type,misc]
             pass
 
         with warnings.catch_warnings(record=True) as capture:
@@ -512,7 +512,7 @@ class RemovalTests(test_base.TestCase):
             warnings.simplefilter("always")
             o = ThingB()
             self.assertEqual('green', o.green_tristars)
-            o.green_tristars = 'b'
+            o.green_tristars = 'b'  # type: ignore[method-assign]
             del o.green_tristars
         self.assertEqual(3, len(capture))
         w = capture[0]

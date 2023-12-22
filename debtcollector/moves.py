@@ -12,8 +12,12 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
+from __future__ import annotations
+
+from collections.abc import Callable
 import functools
 import inspect
+from typing import Any, ParamSpec, TypeVar
 
 import wrapt
 
@@ -24,26 +28,35 @@ _CLASS_MOVED_PREFIX_TPL = "Class '%s' has moved to '%s'"
 _MOVED_CALLABLE_POSTFIX = "()"
 _FUNC_MOVED_PREFIX_TPL = "Function '%s' has moved to '%s'"
 
+P = ParamSpec('P')
+R = TypeVar('R')
+T = TypeVar('T')
+
 
 def _moved_decorator(
-    kind,
-    new_attribute_name,
-    message=None,
-    version=None,
-    removal_version=None,
-    stacklevel=3,
-    attr_postfix=None,
-    category=None,
-):
+    kind: str,
+    new_attribute_name: str,
+    message: str | None = None,
+    version: str | None = None,
+    removal_version: str | None = None,
+    stacklevel: int = 3,
+    attr_postfix: str | None = None,
+    category: type[Warning] | None = None,
+) -> Callable[[Callable[P, R]], Callable[P, R]]:
     """Decorates a method/property that was moved to another location."""
 
-    def decorator(f):
+    def decorator(f: Callable[P, R]) -> Callable[P, R]:
         fully_qualified, old_attribute_name = _utils.get_qualified_name(f)
         if attr_postfix:
             old_attribute_name += attr_postfix
 
         @wrapt.decorator
-        def wrapper(wrapped, instance, args, kwargs):
+        def wrapper(
+            wrapped: Callable[P, R],
+            instance: object | None,
+            args: tuple[Any, ...],
+            kwargs: dict[str, Any],
+        ) -> R:
             base_name = _utils.get_class_name(wrapped, fully_qualified=False)
             if fully_qualified:
                 old_name = old_attribute_name
@@ -68,15 +81,15 @@ def _moved_decorator(
 
 
 def moved_function(
-    new_func,
-    old_func_name,
-    old_module_name,
-    message=None,
-    version=None,
-    removal_version=None,
-    stacklevel=3,
-    category=None,
-):
+    new_func: Callable[P, R],
+    old_func_name: str,
+    old_module_name: str,
+    message: str | None = None,
+    version: str | None = None,
+    removal_version: str | None = None,
+    stacklevel: int = 3,
+    category: type[Warning] | None = None,
+) -> Callable[P, R]:
     """Deprecates a function that was moved to another location.
 
     This generates a wrapper around ``new_func`` that will emit a deprecation
@@ -96,7 +109,7 @@ def moved_function(
     )
 
     @functools.wraps(new_func, assigned=_utils.get_assigned(new_func))
-    def old_new_func(*args, **kwargs):
+    def old_new_func(*args: P.args, **kwargs: P.kwargs) -> R:
         _utils.deprecation(
             out_message, stacklevel=stacklevel, category=category
         )
@@ -133,27 +146,29 @@ class moved_read_only_property:
 
     def __init__(
         self,
-        old_name,
-        new_name,
-        version=None,
-        removal_version=None,
-        stacklevel=3,
-        category=None,
+        old_name: str,
+        new_name: str,
+        version: str | None = None,
+        removal_version: str | None = None,
+        stacklevel: int = 3,
+        category: type[Warning] | None = None,
     ):
         self._old_name = old_name
         self._new_name = new_name
         self._message = _utils.generate_message(
-            f"Read-only property '{self._old_name}' has moved"
-            f" to '{self._new_name}'",
+            f"Read-only property '{self._old_name}' has moved "
+            f"to '{self._new_name}'",
             version=version,
             removal_version=removal_version,
         )
         self._stacklevel = stacklevel
         self._category = category
 
-    def __get__(self, instance, owner):
+    def __get__(self, instance: Any, owner: type | None = None) -> Any:
         _utils.deprecation(
-            self._message, stacklevel=self._stacklevel, category=self._category
+            self._message,
+            stacklevel=self._stacklevel,
+            category=self._category,
         )
         # This handles the descriptor being applied on a
         # instance or a class and makes both work correctly...
@@ -165,13 +180,13 @@ class moved_read_only_property:
 
 
 def moved_method(
-    new_method_name,
-    message=None,
-    version=None,
-    removal_version=None,
-    stacklevel=3,
-    category=None,
-):
+    new_method_name: str,
+    message: str | None = None,
+    version: str | None = None,
+    removal_version: str | None = None,
+    stacklevel: int = 3,
+    category: type[Warning] | None = None,
+) -> Callable[[Callable[P, R]], Callable[P, R]]:
     """Decorates an *instance* method that was moved to another location."""
     if not new_method_name.endswith(_MOVED_CALLABLE_POSTFIX):
         new_method_name += _MOVED_CALLABLE_POSTFIX
@@ -188,13 +203,13 @@ def moved_method(
 
 
 def moved_property(
-    new_attribute_name,
-    message=None,
-    version=None,
-    removal_version=None,
-    stacklevel=3,
-    category=None,
-):
+    new_attribute_name: str,
+    message: str | None = None,
+    version: str | None = None,
+    removal_version: str | None = None,
+    stacklevel: int = 3,
+    category: type[Warning] | None = None,
+) -> Callable[[Callable[P, R]], Callable[P, R]]:
     """Decorates an *instance* property that was moved to another location."""
     return _moved_decorator(
         'Property',
@@ -208,15 +223,15 @@ def moved_property(
 
 
 def moved_class(
-    new_class,
-    old_class_name,
-    old_module_name,
-    message=None,
-    version=None,
-    removal_version=None,
-    stacklevel=3,
-    category=None,
-):
+    new_class: type[T],
+    old_class_name: str,
+    old_module_name: str,
+    message: str | None = None,
+    version: str | None = None,
+    removal_version: str | None = None,
+    stacklevel: int = 3,
+    category: type[Warning] | None = None,
+) -> type[T]:
     """Deprecates a class that was moved to another location.
 
     This creates a 'new-old' type that can be used for a
@@ -241,17 +256,17 @@ def moved_class(
         removal_version=removal_version,
     )
 
-    def decorator(f):
+    def decorator(f: Callable[P, R]) -> Callable[P, R]:
         @functools.wraps(f, assigned=_utils.get_assigned(f))
-        def wrapper(self, *args, **kwargs):
+        def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
             _utils.deprecation(
                 out_message, stacklevel=stacklevel, category=category
             )
-            return f(self, *args, **kwargs)
+            return f(*args, **kwargs)
 
         return wrapper
 
     old_class = type(old_class_name, (new_class,), {})
     old_class.__module__ = old_module_name
-    old_class.__init__ = decorator(old_class.__init__)
+    old_class.__init__ = decorator(old_class.__init__)  # type: ignore
     return old_class

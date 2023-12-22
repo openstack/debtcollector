@@ -12,9 +12,13 @@
 #    License for the specific language governing permissions and limitations
 #    under the License.
 
-import wrapt
+from __future__ import annotations
 
+from collections.abc import Callable
 from inspect import signature
+from typing import Any
+
+import wrapt
 
 from debtcollector import _utils
 
@@ -26,15 +30,16 @@ _KWARG_UPDATED_PREFIX_TPL = (
 )
 
 
+# TODO(stephenfin): Figure out typing for return values
 def updated_kwarg_default_value(
-    name,
-    old_value,
-    new_value,
-    message=None,
-    version=None,
-    stacklevel=3,
-    category=FutureWarning,
-):
+    name: str,
+    old_value: str,
+    new_value: str,
+    message: str | None = None,
+    version: str | None = None,
+    stacklevel: int = 3,
+    category: type[Warning] = FutureWarning,
+) -> Any:
     """Decorates a kwarg accepting function to change the default value"""
 
     prefix = _KWARG_UPDATED_PREFIX_TPL % (name, new_value)
@@ -43,12 +48,17 @@ def updated_kwarg_default_value(
         prefix, postfix=postfix, message=message, version=version
     )
 
-    def decorator(f):
+    def decorator(f: Callable[..., Any]) -> Callable[..., Any]:
         sig = signature(f)
         varnames = list(sig.parameters.keys())
 
         @wrapt.decorator
-        def wrapper(wrapped, instance, args, kwargs):
+        def wrapper(
+            wrapped: Callable[..., Any],
+            instance: Any,
+            args: tuple[Any, ...],
+            kwargs: dict[str, Any],
+        ) -> Any:
             explicit_params = set(varnames[: len(args)] + list(kwargs.keys()))
             allparams = set(varnames)
             default_params = set(allparams - explicit_params)

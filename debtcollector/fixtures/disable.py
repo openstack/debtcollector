@@ -30,6 +30,6 @@ class DisableFixture(fixtures.Fixture):
             <some code that calls into depreciated code>
     """
 
-    def _setUp(self):
+    def _setUp(self) -> None:
         self.addCleanup(setattr, _utils, "_enabled", True)
         _utils._enabled = False
