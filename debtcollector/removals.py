@@ -33,7 +33,7 @@ def _fetch_first_result(fget, fset, fdel, apply_func, value_not_found=None):
     return value_not_found
 
 
-class removed_property(object):
+class removed_property:
     """Property descriptor that deprecates a property.
 
     This works like the ``@property`` descriptor but can be used instead to

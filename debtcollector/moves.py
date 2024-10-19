@@ -85,7 +85,7 @@ def moved_function(new_func, old_func_name, old_module_name,
     return old_new_func
 
 
-class moved_read_only_property(object):
+class moved_read_only_property:
     """Descriptor for read-only properties moved to another location.
 
     This works like the ``@property`` descriptor but can be used instead to

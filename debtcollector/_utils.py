@@ -99,7 +99,7 @@ def get_class_name(obj, fully_qualified=True):
             return obj.__name__
 
     if fully_qualified and hasattr(obj, '__module__'):
-        return '%s.%s' % (obj.__module__, obj.__name__)
+        return '{}.{}'.format(obj.__module__, obj.__name__)
     else:
         return obj.__name__
 

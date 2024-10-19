@@ -52,7 +52,7 @@ def blip_blop_blip_unwrapped(type='cat'):
     return "The %s meowed quietly" % type
 
 
-class WoofWoof(object):
+class WoofWoof:
     @property
     def bark(self):
         return 'woof'
@@ -73,7 +73,7 @@ class WoofWoof(object):
         return 'super-duper'
 
 
-class KittyKat(object):
+class KittyKat:
 
     @moves.moved_method('supermeow')
     def meow(self, volume=11):
@@ -87,7 +87,7 @@ class KittyKat(object):
         return 'supermeow'
 
 
-class Giraffe(object):
+class Giraffe:
     color = 'orange'
     colour = moves.moved_read_only_property('colour', 'color')
 
@@ -98,7 +98,7 @@ class Giraffe(object):
     heightt = moves.moved_read_only_property('heightt', 'height')
 
 
-class NewHotness(object):
+class NewHotness:
     def hot(self):
         return 'cold'
 
@@ -136,28 +136,28 @@ yellowish_sun = moves.moved_function(yellow_sun, 'yellowish_sun', __name__)
 
 
 @removals.remove()
-class EFSF(object):
+class EFSF:
     pass
 
 
 @removals.remove(category=PendingDeprecationWarning)
-class EFSF_2(object):
+class EFSF_2:
     pass
 
 
 @removals.removed_class("StarLord")
-class StarLord(object):
+class StarLord:
     def __init__(self):
         self.name = "star"
 
 
 class StarLordJr(StarLord):
     def __init__(self, name):
-        super(StarLordJr, self).__init__()
+        super().__init__()
         self.name = name
 
 
-class ThingB(object):
+class ThingB:
     @removals.remove()
     def black_tristars(self):
         pass
