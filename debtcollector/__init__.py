@@ -10,16 +10,11 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-try:
-    # For Python 3.8 and later
-    import importlib.metadata as importlib_metadata
-except ImportError:
-    # For everyone else
-    import importlib_metadata
+import importlib.metadata
 
 from debtcollector import _utils
 
-__version__ = importlib_metadata.version('debtcollector')
+__version__ = importlib.metadata.version('debtcollector')
 
 
 def deprecate(prefix, postfix=None, message=None,
