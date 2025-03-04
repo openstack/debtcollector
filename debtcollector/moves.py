@@ -25,9 +25,16 @@ _MOVED_CALLABLE_POSTFIX = "()"
 _FUNC_MOVED_PREFIX_TPL = "Function '%s' has moved to '%s'"
 
 
-def _moved_decorator(kind, new_attribute_name, message=None,
-                     version=None, removal_version=None, stacklevel=3,
-                     attr_postfix=None, category=None):
+def _moved_decorator(
+    kind,
+    new_attribute_name,
+    message=None,
+    version=None,
+    removal_version=None,
+    stacklevel=3,
+    attr_postfix=None,
+    category=None,
+):
     """Decorates a method/property that was moved to another location."""
 
     def decorator(f):
@@ -45,10 +52,14 @@ def _moved_decorator(kind, new_attribute_name, message=None,
             new_name = ".".join((base_name, new_attribute_name))
             prefix = _KIND_MOVED_PREFIX_TPL % (kind, old_name, new_name)
             out_message = _utils.generate_message(
-                prefix, message=message,
-                version=version, removal_version=removal_version)
-            _utils.deprecation(out_message, stacklevel=stacklevel,
-                               category=category)
+                prefix,
+                message=message,
+                version=version,
+                removal_version=removal_version,
+            )
+            _utils.deprecation(
+                out_message, stacklevel=stacklevel, category=category
+            )
             return wrapped(*args, **kwargs)
 
         return wrapper(f)
@@ -56,9 +67,16 @@ def _moved_decorator(kind, new_attribute_name, message=None,
     return decorator
 
 
-def moved_function(new_func, old_func_name, old_module_name,
-                   message=None, version=None, removal_version=None,
-                   stacklevel=3, category=None):
+def moved_function(
+    new_func,
+    old_func_name,
+    old_module_name,
+    message=None,
+    version=None,
+    removal_version=None,
+    stacklevel=3,
+    category=None,
+):
     """Deprecates a function that was moved to another location.
 
     This generates a wrapper around ``new_func`` that will emit a deprecation
@@ -70,14 +88,18 @@ def moved_function(new_func, old_func_name, old_module_name,
     old_func_full_name = ".".join([old_module_name, old_func_name])
     old_func_full_name += _MOVED_CALLABLE_POSTFIX
     prefix = _FUNC_MOVED_PREFIX_TPL % (old_func_full_name, new_func_full_name)
-    out_message = _utils.generate_message(prefix,
-                                          message=message, version=version,
-                                          removal_version=removal_version)
+    out_message = _utils.generate_message(
+        prefix,
+        message=message,
+        version=version,
+        removal_version=removal_version,
+    )
 
     @functools.wraps(new_func, assigned=_utils.get_assigned(new_func))
     def old_new_func(*args, **kwargs):
-        _utils.deprecation(out_message, stacklevel=stacklevel,
-                           category=category)
+        _utils.deprecation(
+            out_message, stacklevel=stacklevel, category=category
+        )
         return new_func(*args, **kwargs)
 
     old_new_func.__name__ = old_func_name
@@ -109,22 +131,30 @@ class moved_read_only_property:
                      :py:class:`DeprecationWarning` if not provided
     """
 
-    def __init__(self, old_name, new_name,
-                 version=None, removal_version=None,
-                 stacklevel=3, category=None):
+    def __init__(
+        self,
+        old_name,
+        new_name,
+        version=None,
+        removal_version=None,
+        stacklevel=3,
+        category=None,
+    ):
         self._old_name = old_name
         self._new_name = new_name
         self._message = _utils.generate_message(
-            "Read-only property '%s' has moved"
-            " to '%s'" % (self._old_name, self._new_name),
-            version=version, removal_version=removal_version)
+            f"Read-only property '{self._old_name}' has moved"
+            f" to '{self._new_name}'",
+            version=version,
+            removal_version=removal_version,
+        )
         self._stacklevel = stacklevel
         self._category = category
 
     def __get__(self, instance, owner):
-        _utils.deprecation(self._message,
-                           stacklevel=self._stacklevel,
-                           category=self._category)
+        _utils.deprecation(
+            self._message, stacklevel=self._stacklevel, category=self._category
+        )
         # This handles the descriptor being applied on a
         # instance or a class and makes both work correctly...
         if instance is not None:
@@ -134,31 +164,59 @@ class moved_read_only_property:
         return getattr(real_owner, self._new_name)
 
 
-def moved_method(new_method_name, message=None,
-                 version=None, removal_version=None, stacklevel=3,
-                 category=None):
+def moved_method(
+    new_method_name,
+    message=None,
+    version=None,
+    removal_version=None,
+    stacklevel=3,
+    category=None,
+):
     """Decorates an *instance* method that was moved to another location."""
     if not new_method_name.endswith(_MOVED_CALLABLE_POSTFIX):
         new_method_name += _MOVED_CALLABLE_POSTFIX
-    return _moved_decorator('Method', new_method_name, message=message,
-                            version=version, removal_version=removal_version,
-                            stacklevel=stacklevel,
-                            attr_postfix=_MOVED_CALLABLE_POSTFIX,
-                            category=category)
+    return _moved_decorator(
+        'Method',
+        new_method_name,
+        message=message,
+        version=version,
+        removal_version=removal_version,
+        stacklevel=stacklevel,
+        attr_postfix=_MOVED_CALLABLE_POSTFIX,
+        category=category,
+    )
 
 
-def moved_property(new_attribute_name, message=None,
-                   version=None, removal_version=None, stacklevel=3,
-                   category=None):
+def moved_property(
+    new_attribute_name,
+    message=None,
+    version=None,
+    removal_version=None,
+    stacklevel=3,
+    category=None,
+):
     """Decorates an *instance* property that was moved to another location."""
-    return _moved_decorator('Property', new_attribute_name, message=message,
-                            version=version, removal_version=removal_version,
-                            stacklevel=stacklevel, category=category)
+    return _moved_decorator(
+        'Property',
+        new_attribute_name,
+        message=message,
+        version=version,
+        removal_version=removal_version,
+        stacklevel=stacklevel,
+        category=category,
+    )
 
 
-def moved_class(new_class, old_class_name, old_module_name,
-                message=None, version=None, removal_version=None,
-                stacklevel=3, category=None):
+def moved_class(
+    new_class,
+    old_class_name,
+    old_module_name,
+    message=None,
+    version=None,
+    removal_version=None,
+    stacklevel=3,
+    category=None,
+):
     """Deprecates a class that was moved to another location.
 
     This creates a 'new-old' type that can be used for a
@@ -169,22 +227,26 @@ def moved_class(new_class, old_class_name, old_module_name,
 
     if not inspect.isclass(new_class):
         _qual, type_name = _utils.get_qualified_name(type(new_class))
-        raise TypeError("Unexpected class type '%s' (expected"
-                        " class type only)" % type_name)
+        raise TypeError(
+            f"Unexpected class type '{type_name}' (expected class type only)"
+        )
 
     old_name = ".".join((old_module_name, old_class_name))
     new_name = _utils.get_class_name(new_class)
     prefix = _CLASS_MOVED_PREFIX_TPL % (old_name, new_name)
     out_message = _utils.generate_message(
-        prefix, message=message, version=version,
-        removal_version=removal_version)
+        prefix,
+        message=message,
+        version=version,
+        removal_version=removal_version,
+    )
 
     def decorator(f):
-
         @functools.wraps(f, assigned=_utils.get_assigned(f))
         def wrapper(self, *args, **kwargs):
-            _utils.deprecation(out_message, stacklevel=stacklevel,
-                               category=category)
+            _utils.deprecation(
+                out_message, stacklevel=stacklevel, category=category
+            )
             return f(self, *args, **kwargs)
 
         return wrapper

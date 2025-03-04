@@ -17,9 +17,15 @@ from debtcollector import _utils
 __version__ = importlib.metadata.version('debtcollector')
 
 
-def deprecate(prefix, postfix=None, message=None,
-              version=None, removal_version=None,
-              stacklevel=3, category=DeprecationWarning):
+def deprecate(
+    prefix,
+    postfix=None,
+    message=None,
+    version=None,
+    removal_version=None,
+    stacklevel=3,
+    category=DeprecationWarning,
+):
     """Helper to deprecate some thing using generated message format.
 
     :param prefix: prefix string used as the prefix of the output message
@@ -38,8 +44,11 @@ def deprecate(prefix, postfix=None, message=None,
     :param category: the :mod:`warnings` category to use, defaults to
                      :py:class:`DeprecationWarning` if not provided
     """
-    out_message = _utils.generate_message(prefix, postfix=postfix,
-                                          version=version, message=message,
-                                          removal_version=removal_version)
-    _utils.deprecation(out_message, stacklevel=stacklevel,
-                       category=category)
+    out_message = _utils.generate_message(
+        prefix,
+        postfix=postfix,
+        version=version,
+        message=message,
+        removal_version=removal_version,
+    )
+    _utils.deprecation(out_message, stacklevel=stacklevel, category=category)

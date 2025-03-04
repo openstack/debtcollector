@@ -56,23 +56,26 @@ def get_qualified_name(obj):
         return (False, obj.__name__)
 
 
-def generate_message(prefix, postfix=None, message=None,
-                     version=None, removal_version=None):
+def generate_message(
+    prefix, postfix=None, message=None, version=None, removal_version=None
+):
     """Helper to generate a common message 'style' for deprecation helpers."""
     message_components = [prefix]
     if version:
-        message_components.append(" in version '%s'" % version)
+        message_components.append(f" in version '{version}'")
     if removal_version:
         if removal_version == "?":
-            message_components.append(" and will be removed in a future"
-                                      " version")
+            message_components.append(
+                " and will be removed in a future version"
+            )
         else:
-            message_components.append(" and will be removed in version '%s'"
-                                      % removal_version)
+            message_components.append(
+                f" and will be removed in version '{removal_version}'"
+            )
     if postfix:
         message_components.append(postfix)
     if message:
-        message_components.append(": %s" % message)
+        message_components.append(f": {message}")
     return ''.join(message_components)
 
 
@@ -139,8 +142,11 @@ def get_callable_name(function):
             if hasattr(function, 'im_class'):
                 # This is a unbound method, which exists only in python 2.x
                 im_class = function.im_class
-                parts = (im_class.__module__,
-                         im_class.__name__, function.__name__)
+                parts = (
+                    im_class.__module__,
+                    im_class.__name__,
+                    function.__name__,
+                )
             else:
                 parts = (function.__module__, function.__name__)
     else:
