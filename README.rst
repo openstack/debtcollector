@@ -19,9 +19,9 @@ collect your technical debt in a non-destructive manner. The goal of this
 library is to provide well documented developer facing deprecation
 patterns that start of with a basic set and can expand into a larger
 set of patterns as time goes on. The desired output of these patterns
-is to apply the warnings module to emit DeprecationWarning or PendingDeprecationWarning
-or similar derivative to developers using libraries (or potentially
-applications) about future deprecations.
+is to apply the warnings module to emit DeprecationWarning or
+PendingDeprecationWarning or similar derivative to developers using libraries
+(or potentially applications) about future deprecations.
 
 
 * Free software: Apache license
