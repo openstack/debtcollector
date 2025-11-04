@@ -2,4 +2,4 @@
 # date but we do not test them so no guarantee of having them all correct. If
 # you find any incorrect lower bounds, let us know or propose a fix.
 
-wrapt>=1.7.0 # BSD License
+wrapt>=2.0.0 # BSD License
