@@ -1,14 +1,10 @@
-========================
-Team and repository tags
-========================
-
-.. image:: https://governance.openstack.org/tc/badges/debtcollector.svg
-    :target: https://governance.openstack.org/tc/reference/tags/index.html
-
-.. Change things from this point on
-
+=============
 Debtcollector
 =============
+
+.. image:: https://governance.openstack.org/tc/badges/debtcollector.svg
+
+.. Change things from this point on
 
 .. image:: https://img.shields.io/pypi/v/debtcollector.svg
     :target: https://pypi.org/project/debtcollector/
