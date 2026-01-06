@@ -33,7 +33,7 @@ def _fetch_first_result(fget, fset, fdel, apply_func, value_not_found=None):
     return value_not_found
 
 
-class removed_property:
+class removed_property(property):
     """Property descriptor that deprecates a property.
 
     This works like the ``@property`` descriptor but can be used instead to
@@ -73,18 +73,15 @@ class removed_property:
         removal_version=None,
         message=None,
     ):
-        self.fset = fset
-        self.fget = fget
-        self.fdel = fdel
+        if doc is None and inspect.isfunction(fget):
+            doc = getattr(fget, '__doc__', None)
+        super().__init__(fget, fset, fdel, doc)
         self.stacklevel = stacklevel
         self.category = category
         self.version = version
         self.removal_version = removal_version
         self.message = message
-        if doc is None and inspect.isfunction(fget):
-            doc = getattr(fget, '__doc__', None)
         self._message_cache = {}
-        self.__doc__ = doc
 
     def _fetch_message_from_cache(self, kind):
         try:
@@ -108,20 +105,17 @@ class removed_property:
         return out_message
 
     def __call__(self, fget, **kwargs):
-        self.fget = fget
-        self.message = kwargs.get('message', self.message)
-        self.version = kwargs.get('version', self.version)
-        self.removal_version = kwargs.get(
-            'removal_version', self.removal_version
+        return type(self)(
+            fget,
+            self.fset,
+            self.fdel,
+            kwargs.get('doc', getattr(fget, '__doc__', self.__doc__)),
+            kwargs.get('stacklevel', self.stacklevel),
+            kwargs.get('category', self.category),
+            kwargs.get('version', self.version),
+            kwargs.get('removal_version', self.removal_version),
+            kwargs.get('message', self.message),
         )
-        self.stacklevel = kwargs.get('stacklevel', self.stacklevel)
-        self.category = kwargs.get('category', self.category)
-        self.__doc__ = kwargs.get(
-            'doc', getattr(fget, '__doc__', self.__doc__)
-        )
-        # Regenerate all the messages...
-        self._message_cache.clear()
-        return self
 
     def __delete__(self, obj):
         if self.fdel is None:
@@ -153,31 +147,43 @@ class removed_property:
         return self.fget(obj)
 
     def getter(self, fget):
-        o = type(self)(fget, self.fset, self.fdel, self.__doc__)
-        o.message = self.message
-        o.version = self.version
-        o.stacklevel = self.stacklevel
-        o.removal_version = self.removal_version
-        o.category = self.category
-        return o
+        return type(self)(
+            fget,
+            self.fset,
+            self.fdel,
+            self.__doc__,
+            self.stacklevel,
+            self.category,
+            self.version,
+            self.removal_version,
+            self.message,
+        )
 
     def setter(self, fset):
-        o = type(self)(self.fget, fset, self.fdel, self.__doc__)
-        o.message = self.message
-        o.version = self.version
-        o.stacklevel = self.stacklevel
-        o.removal_version = self.removal_version
-        o.category = self.category
-        return o
+        return type(self)(
+            self.fget,
+            fset,
+            self.fdel,
+            self.__doc__,
+            self.stacklevel,
+            self.category,
+            self.version,
+            self.removal_version,
+            self.message,
+        )
 
     def deleter(self, fdel):
-        o = type(self)(self.fget, self.fset, fdel, self.__doc__)
-        o.message = self.message
-        o.version = self.version
-        o.stacklevel = self.stacklevel
-        o.removal_version = self.removal_version
-        o.category = self.category
-        return o
+        return type(self)(
+            self.fget,
+            self.fset,
+            fdel,
+            self.__doc__,
+            self.stacklevel,
+            self.category,
+            self.version,
+            self.removal_version,
+            self.message,
+        )
 
 
 def remove(
