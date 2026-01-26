@@ -268,5 +268,5 @@ def moved_class(
 
     old_class = type(old_class_name, (new_class,), {})
     old_class.__module__ = old_module_name
-    old_class.__init__ = decorator(old_class.__init__)  # type: ignore
+    old_class.__init__ = decorator(old_class.__init__)  # type: ignore[misc]
     return old_class

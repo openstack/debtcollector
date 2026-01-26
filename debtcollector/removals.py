@@ -378,9 +378,7 @@ def removed_kwarg(
             )
         return wrapped(*args, **kwargs)
 
-    # FIXME(stephenfin): Depends on [1] or similar
-    # [1] https://github.com/GrahamDumpleton/wrapt/pull/306
-    return wrapper  # type: ignore[return-value]
+    return wrapper
 
 
 def removed_class(
