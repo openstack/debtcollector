@@ -13,10 +13,22 @@
 from __future__ import annotations
 
 import importlib.metadata
+import warnings
 
 from debtcollector import _utils
 
-__version__ = importlib.metadata.version('debtcollector')
+
+def __getattr__(name: str) -> str:
+    if name == '__version__':
+        warnings.warn(
+            "Accessing debtcollector.__version__ is deprecated and will be "
+            "removed in a future release. Use importlib.metadata instead: "
+            "importlib.metadata.version('debtcollector')",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return importlib.metadata.version('debtcollector')
+    raise AttributeError(f"module 'debtcollector' has no attribute {name!r}")
 
 
 def deprecate(
