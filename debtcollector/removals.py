@@ -418,7 +418,7 @@ def removed_class(
             version=version,
             removal_version=removal_version,
         )
-        cls.__init__ = _wrap_it(cls.__init__, out_message)
+        cls.__init__ = _wrap_it(cls.__init__, out_message)  # type: ignore[method-assign]
         return cls
 
     return _cls_decorator
