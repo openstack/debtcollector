@@ -1,7 +1,0 @@
-[run]
-branch = True
-source = debtcollector
-omit = debtcollector/tests/*
-
-[report]
-ignore_errors = True

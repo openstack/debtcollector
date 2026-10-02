@@ -34,6 +34,19 @@ Repository = "https://opendev.org/openstack/debtcollector/"
 [tool.setuptools.packages.find]
 include = ["debtcollector*"]
 
+[tool.coverage.run]
+source = [
+    "debtcollector"
+]
+branch = true
+omit = [
+    "debtcollector/tests/*"
+]
+
+[tool.coverage.report]
+ignore_errors = true
+show_missing = true
+
 [tool.mypy]
 python_version = "3.11"
 show_column_numbers = true
