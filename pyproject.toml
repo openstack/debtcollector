@@ -39,6 +39,7 @@ source = [
     "debtcollector"
 ]
 branch = true
+parallel = true
 omit = [
     "debtcollector/tests/*"
 ]
